@@ -1,7 +1,7 @@
 import { del } from '@vercel/blob';
 import { randomUUID } from 'node:crypto';
 import {
-  redis, KEYS, json, blobAuth, clientIp, readVoter, newVoter, underLimit, isOurBlob,
+  redis, KEYS, json, blobAuth, playableUrl, clientIp, readVoter, newVoter, underLimit, isOurBlob,
   VOTE_COOLDOWN, UPLOADS_PER_IP_PER_HOUR,
 } from './_lib/store.js';
 
@@ -16,10 +16,15 @@ export async function GET(request) {
   const votes = {};
   for (let i = 0; i < scores.length; i += 2) votes[scores[i]] = Number(scores[i + 1]);
 
-  const list = Object.values(entries || {})
+  const list = await Promise.all(Object.values(entries || {})
     .map((e) => (typeof e === 'string' ? JSON.parse(e) : e))
-    .map((e) => ({ ...e, votes: votes[e.id] || 0 }))
-    .sort((a, b) => b.votes - a.votes || a.createdAt - b.createdAt);
+    .map(async (e) => ({
+      ...e,
+      mediaUrl: await playableUrl(e.mediaUrl, request),
+      coverUrl: await playableUrl(e.coverUrl, request),
+      votes: votes[e.id] || 0,
+    })));
+  list.sort((a, b) => b.votes - a.votes || a.createdAt - b.createdAt);
 
   const voter = readVoter(request);
   let cooldown = 0;

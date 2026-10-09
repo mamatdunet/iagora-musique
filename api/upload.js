@@ -1,6 +1,6 @@
 import { issueSignedToken } from '@vercel/blob';
 import { handleUpload, handleUploadPresigned } from '@vercel/blob/client';
-import { json, blobToken, blobStoreId, blobWebhookKey, blobAuth } from './_lib/store.js';
+import { json, blobToken, blobStoreId, blobWebhookKey, blobAuth, playableUrl } from './_lib/store.js';
 
 const MEDIA_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/x-m4a', 'audio/aac', 'video/mp4', 'video/quicktime', 'video/webm'];
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -18,8 +18,14 @@ function rules(pathname) {
 const uploadMode = () => (blobToken() ? 'token' : blobStoreId() ? 'presigned' : null);
 
 // Diagnostic : le stockage des fichiers est-il branché ? (jamais de valeur de variable)
-export function GET() {
+export async function GET(request) {
   const mode = uploadMode();
+  // DIAGNOSTIC TEMPORAIRE : lecture signée du fichier de test.
+  if (new URL(request.url).searchParams.has('diag')) {
+    const url = await playableUrl('https://f91qfnoemoyoveph.private.blob.vercel-storage.com/tubes/zz-test-diagnostic.mp3', request);
+    const res = await fetch(url, { method: 'HEAD' }).catch((e) => ({ status: e.message }));
+    return json({ mode, signed: url.includes('?'), status: res.status });
+  }
   return json({ blob: Boolean(mode), mode });
 }
 

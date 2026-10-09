@@ -1,5 +1,6 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { Redis } from '@upstash/redis';
+import { issueSignedToken, presignUrl } from '@vercel/blob';
 
 export const redis = new Redis({
   url: process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL,
@@ -87,6 +88,29 @@ export function blobAuth(request) {
   const storeId = blobStoreId();
   const oidcToken = request?.headers.get('x-vercel-oidc-token') || process.env.VERCEL_OIDC_TOKEN || undefined;
   return storeId ? { storeId, ...(oidcToken ? { oidcToken } : {}) } : {};
+}
+
+// Store privé : les fichiers ne sont lisibles qu'avec un lien signé.
+// Un jeton de lecture sert pour tous les fichiers ; il est gardé en mémoire 6 h (validité 12 h).
+let readToken = null;
+async function getReadToken(request) {
+  if (readToken && readToken.validUntil - Date.now() > 6 * 3600 * 1000) return readToken;
+  readToken = await issueSignedToken({
+    ...blobAuth(request), pathname: '*', operations: ['get'], validUntil: Date.now() + 12 * 3600 * 1000,
+  });
+  return readToken;
+}
+
+export async function playableUrl(url, request) {
+  if (!url || !new URL(url).hostname.includes('.private.')) return url;
+  try {
+    const pathname = decodeURIComponent(new URL(url).pathname.slice(1));
+    const { presignedUrl } = await presignUrl(await getReadToken(request), { operation: 'get', pathname, access: 'private' });
+    return presignedUrl;
+  } catch (error) {
+    console.error('Lien signé impossible', error);
+    return url;
+  }
 }
 
 export function isOurBlob(url) {
