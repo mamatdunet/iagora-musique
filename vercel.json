@@ -1,3 +1,4 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [{ "source": "/scene", "destination": "/top50", "permanent": false }]
 }

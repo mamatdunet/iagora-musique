@@ -42,7 +42,6 @@ export async function POST(request) {
     id: randomUUID().slice(0, 8),
     title: clean(body.title, 80),
     artist: clean(body.artist, 80),
-    level: clean(body.level, 20),
     mediaUrl: String(body.mediaUrl || ''),
     mediaType: String(body.mediaType || '').startsWith('video/') ? 'video' : 'audio',
     coverUrl: body.coverUrl ? String(body.coverUrl) : null,

@@ -2,12 +2,13 @@ import { upload } from '@vercel/blob/client';
 
 const $ = (sel) => document.querySelector(sel);
 const list = $('#entries');
+const podium = $('#podium');
 const empty = $('#empty');
 const voteStatus = $('#vote-status');
 const cooldownBox = $('#cooldown');
 const cooldownLeft = $('#cooldown-left');
 
-const LEVELS = { 1: 'Niveau 1', 2: 'Niveau 2', 3: 'Niveau 3', studio: 'Studio' };
+const MEDALS = ['🥇', '🥈', '🥉'];
 const isAdmin = new URLSearchParams(location.search).has('admin');
 
 let cooldownUntil = 0;
@@ -33,7 +34,7 @@ function updateCooldown() {
   const active = left > 0;
   cooldownBox.hidden = !active;
   cooldownLeft.textContent = String(Math.max(left, 0));
-  for (const btn of list.querySelectorAll('.vote .cta')) btn.disabled = active;
+  for (const btn of document.querySelectorAll('.entry .vote .cta')) btn.disabled = active;
   if (!active) {
     clearInterval(tick);
     setStatus(voteStatus, '');
@@ -51,6 +52,9 @@ function buildEntry(entry) {
 
   const rank = document.createElement('div');
   rank.className = 'rank';
+  const medal = document.createElement('div');
+  medal.className = 'medal';
+  medal.setAttribute('aria-hidden', 'true');
 
   let cover;
   if (entry.coverUrl) {
@@ -72,11 +76,6 @@ function buildEntry(entry) {
   const by = document.createElement('p');
   by.className = 'by';
   by.textContent = entry.artist;
-  if (LEVELS[entry.level]) {
-    const lvl = document.createElement('span');
-    lvl.textContent = LEVELS[entry.level];
-    by.append(lvl);
-  }
   const media = document.createElement(entry.mediaType === 'video' ? 'video' : 'audio');
   media.src = entry.mediaUrl;
   media.controls = true;
@@ -104,7 +103,11 @@ function buildEntry(entry) {
     vote.append(del);
   }
 
-  li.append(rank, cover, info, vote);
+  // .body forme la carte sur le podium ; dans la liste, elle s'efface (display: contents).
+  const body = document.createElement('div');
+  body.className = 'body';
+  body.append(cover, info, vote);
+  li.append(medal, body, rank);
   return li;
 }
 
@@ -118,10 +121,14 @@ function render(entries) {
     }
     seen.add(entry.id);
     li.querySelector('.rank').textContent = String(i + 1);
+    li.querySelector('.medal').textContent = MEDALS[i] || '';
     li.querySelector('.count').innerHTML = `${entry.votes}<small>vote${entry.votes > 1 ? 's' : ''}</small>`;
-    li.classList.toggle('top', i === 0 && entry.votes > 0);
+    if (i < 3) li.dataset.place = String(i + 1);
+    else delete li.dataset.place;
     // Ne déplace le nœud que si nécessaire, pour ne pas couper une écoute en cours.
-    if (list.children[i] !== li) list.insertBefore(li, list.children[i] || null);
+    const parent = i < 3 ? podium : list;
+    const index = i < 3 ? i : i - 3;
+    if (parent.children[index] !== li) parent.insertBefore(li, parent.children[index] || null);
   });
   for (const [id, li] of nodes) {
     if (!seen.has(id)) {
@@ -130,6 +137,7 @@ function render(entries) {
     }
   }
   empty.hidden = entries.length > 0;
+  list.hidden = entries.length === 0;
   updateCooldown();
 }
 
@@ -191,7 +199,7 @@ async function removeEntry(entry) {
 
 // Une seule chanson à la fois.
 document.addEventListener('play', (event) => {
-  for (const m of list.querySelectorAll('audio, video')) if (m !== event.target) m.pause();
+  for (const m of document.querySelectorAll('.entry audio, .entry video')) if (m !== event.target) m.pause();
 }, true);
 
 /* ---------- Dépôt ---------- */
@@ -199,6 +207,63 @@ document.addEventListener('play', (event) => {
 const form = $('#upload-form');
 const progress = $('#upload-progress');
 const uploadStatus = $('#upload-status');
+
+const mediaInput = form.elements.media;
+const coverInput = form.elements.cover;
+const mediaZone = $('#media-zone');
+const coverZone = $('#cover-zone');
+const mediaName = $('#media-name');
+const coverPreview = $('#cover-preview');
+
+const formatSize = (bytes) => `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} Mo`;
+
+function showFiles() {
+  const media = mediaInput.files[0];
+  mediaZone.classList.toggle('has-file', Boolean(media));
+  mediaName.hidden = !media;
+  if (media) {
+    mediaName.textContent = `✔ ${media.name} · ${formatSize(media.size)}`;
+    // Propose le nom du fichier comme titre si rien n'est saisi.
+    if (!form.elements.title.value) form.elements.title.value = media.name.replace(/\.[^.]*$/, '').slice(0, 80);
+  }
+  const cover = coverInput.files[0];
+  coverZone.classList.toggle('has-file', Boolean(cover));
+  coverPreview.hidden = !cover;
+  if (coverPreview.src) URL.revokeObjectURL(coverPreview.src);
+  coverPreview.src = cover ? URL.createObjectURL(cover) : '';
+}
+
+function putFile(input, file) {
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  input.files = transfer.files;
+  showFiles();
+}
+
+// Glisser-déposer : sur une zone, ou n'importe où dans la page
+// (une image va dans la pochette, un son ou une vidéo dans la chanson).
+for (const [zone, input] of [[mediaZone, mediaInput], [coverZone, coverInput]]) {
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    zone.classList.remove('over');
+    const file = e.dataTransfer.files[0];
+    if (file) putFile(input, file);
+  });
+}
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('drop', (e) => {
+  e.preventDefault();
+  for (const file of e.dataTransfer.files) {
+    if (file.type.startsWith('image/')) putFile(coverInput, file);
+    else if (/^(audio|video)\//.test(file.type)) putFile(mediaInput, file);
+  }
+  $('#deposer').scrollIntoView({ behavior: 'smooth' });
+});
+mediaInput.addEventListener('change', showFiles);
+coverInput.addEventListener('change', showFiles);
 
 function safeName(file) {
   const ext = (file.name.match(/\.[a-z0-9]{1,5}$/i) || [''])[0].toLowerCase();
@@ -212,7 +277,15 @@ form.addEventListener('submit', async (event) => {
   const data = new FormData(form);
   const media = data.get('media');
   const cover = data.get('cover');
-  if (!media || !media.size) return;
+  if (!media || !media.size) {
+    setStatus(uploadStatus, 'Ajoute d’abord ta chanson dans la grande zone 🎵', 'error');
+    mediaZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (!data.get('title').trim() || !data.get('artist').trim()) {
+    setStatus(uploadStatus, 'Indique le titre et le nom de l’artiste.', 'error');
+    return;
+  }
 
   button.disabled = true;
   progress.hidden = false;
@@ -242,7 +315,6 @@ form.addEventListener('submit', async (event) => {
       body: JSON.stringify({
         title: data.get('title'),
         artist: data.get('artist'),
-        level: data.get('level'),
         mediaUrl: mediaBlob.url,
         mediaType: media.type,
         coverUrl,
@@ -252,7 +324,8 @@ form.addEventListener('submit', async (event) => {
     if (!res.ok) throw new Error(result.error);
 
     form.reset();
-    setStatus(uploadStatus, 'Ton tube est sur scène ! 🎉', 'ok');
+    showFiles();
+    setStatus(uploadStatus, 'Ta chanson est dans le Top 50 ! 🎉 Maintenant, vote pour ta préférée.', 'ok');
     await refresh();
     nodes.get(result.entry.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } catch (error) {

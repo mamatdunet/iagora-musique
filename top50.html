@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Top 50 · Tube de l'automne 🍁</title>
+  <meta name="description" content="Dépose ta chanson dans le Top 50 du Tube de l'automne et vote pour la meilleure.">
+  <link rel="icon" href="/assets/logo-iagora.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Heebo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/top50.css">
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a href="https://iagora.fr/" aria-label="IAgora"><img class="logo" src="/assets/logo-iagora.png" alt="IAgora"></a>
+      <span class="tag">Tube de l'automne · Top 50</span>
+      <a class="nav-link" href="/">➭ Les niveaux</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <p class="eyebrow">Tube de l'automne <span aria-hidden="true">🍁</span></p>
+      <h1>Top 50 <span class="trophy" aria-hidden="true">🏆</span></h1>
+      <div class="howto">
+        <a class="howto-step" href="#deposer"><b>1</b><span><strong>Dépose ta chanson</strong> MP3 ou vidéo, avec ta pochette</span></a>
+        <a class="howto-step" href="#classement"><b>2</b><span><strong>Vote pour la meilleure</strong> 1 vote, puis tu passes la main</span></a>
+      </div>
+
+      <section id="deposer" class="drop-section" aria-labelledby="upload-title">
+        <h2 id="upload-title" class="section-title">🎤 Dépose ta chanson</h2>
+        <form id="upload-form" class="upload" novalidate>
+          <label class="dropzone" id="media-zone">
+            <input name="media" type="file" class="visually-hidden" accept="audio/*,video/mp4,video/quicktime,video/webm">
+            <span class="dz-icon" aria-hidden="true">🎵</span>
+            <span class="dz-title">Glisse ta chanson ici</span>
+            <span class="dz-sub">ou <u>clique pour la choisir</u> · MP3, WAV, M4A ou vidéo MP4</span>
+            <span class="dz-file" id="media-name" hidden></span>
+          </label>
+
+          <div class="fields">
+            <label>Titre de la chanson
+              <input name="title" required maxlength="80" placeholder="Les feuilles mortes 2.0">
+            </label>
+            <label>Artiste ou équipe
+              <input name="artist" required maxlength="80" placeholder="Les Rois du Refrain">
+            </label>
+            <label class="dropzone small" id="cover-zone">
+              <input name="cover" type="file" class="visually-hidden" accept="image/jpeg,image/png,image/webp,image/gif">
+              <img id="cover-preview" alt="" hidden>
+              <span class="dz-small-text"><strong>Pochette</strong> <span class="muted">(facultatif)</span><br>Glisse ou clique pour ajouter une image</span>
+            </label>
+            <progress id="upload-progress" max="100" value="0" hidden></progress>
+            <p id="upload-status" class="status" role="status"></p>
+            <button class="cta cta-big" type="submit">Publier dans le Top 50 ⬆</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="classement" class="ranking" aria-labelledby="list-title">
+        <div class="ranking-head">
+          <h2 id="list-title" class="section-title">🗳️ Vote pour la meilleure chanson</h2>
+          <div id="cooldown" class="cooldown" role="status" hidden>
+            <strong>Merci pour ton vote&nbsp;!</strong> Passe la main 👋 Prochain vote dans <b id="cooldown-left">30</b>&nbsp;s
+          </div>
+        </div>
+        <p id="vote-status" class="status" role="alert"></p>
+        <ol id="podium" class="podium" aria-label="Le podium"></ol>
+        <ol id="entries" class="entries" start="4"></ol>
+        <p id="empty" class="empty" hidden>Le podium t'attend&nbsp;! Sois la première ou le premier à déposer ta chanson 🎤</p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <ol class="steps">
+        <li><span>1</span>Je compose</li>
+        <li><span>2</span>J'habille ma pochette</li>
+        <li><span>3</span>J'exporte mon clip</li>
+        <li><span>4</span>Je dépose dans le Top&nbsp;50</li>
+        <li><span>5</span>On vote&nbsp;!</li>
+      </ol>
+      <span>L'IA par tous et pour tous / iagora.fr</span>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/top50.js"></script>
+</body>
+</html>

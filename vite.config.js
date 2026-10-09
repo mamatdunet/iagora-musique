@@ -6,7 +6,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
-        scene: resolve(import.meta.dirname, 'scene.html'),
+        top50: resolve(import.meta.dirname, 'top50.html'),
       },
     },
   },

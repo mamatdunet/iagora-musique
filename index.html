@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tube de l'automne 🍁</title>
-  <meta name="description" content="Atelier IAgora : compose ton tube de l'automne avec Suno, du clé en main au mode Studio.">
+  <meta name="description" content="Atelier IAgora : compose ton tube de l'automne avec Suno, du clé en main au sur mesure, puis vote pour la meilleure chanson.">
   <link rel="icon" href="/assets/logo-iagora.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
     <div class="wrap">
       <a href="https://iagora.fr/" aria-label="IAgora"><img class="logo" src="/assets/logo-iagora.png" alt="IAgora"></a>
       <span class="tag">Atelier musique · Suno · Défis croissants</span>
-      <a class="nav-link" href="/scene">La scène ➭</a>
+      <a class="nav-link nav-pill" href="/top50">🏆 Top 50</a>
     </div>
   </header>
 
@@ -24,7 +24,7 @@
     <div class="wrap">
       <p class="eyebrow">Atelier IAgora</p>
       <h1>Tube de <span class="nowrap">l'automne <span class="leaf" aria-hidden="true">🍁</span></span></h1>
-      <p class="lead">Compose une chanson avec l'IA, de A à Z, uniquement avec <strong>Suno</strong>. Commence au niveau 1, monte en difficulté à ton rythme, puis <strong>dépose ton tube sur la scène</strong> pour que tout le monde l'écoute… et vote&nbsp;!</p>
+      <p class="lead">Compose une chanson avec l'IA, de A à Z, uniquement avec <strong>Suno</strong>. Commence au niveau 1, monte en difficulté à ton rythme, puis <strong>dépose ton tube dans le Top&nbsp;50</strong> et <strong>vote pour la meilleure chanson</strong>&nbsp;!</p>
 
       <h2 class="choose">Choisis ton niveau ➭</h2>
 
@@ -62,8 +62,7 @@
           <h2>Sur mesure</h2>
           <p>Toujours dans ton IA, à la suite du niveau&nbsp;2, fais un prompt plus précis.</p>
           <ol>
-            <li>Charge du contenu métier ou propre aux Compagnons <em>(non confidentiel&nbsp;!)</em></li>
-            <li>Ajoute des private jokes, de quoi faire une chanson à ton image</li>
+            <li>Ajoute des private jokes, des anecdotes, de quoi faire une chanson à ton image</li>
             <li>Demande-lui de t'aider à définir le style musical</li>
             <li>Colle paroles et style dans Suno, et c'est parti</li>
           </ol>
@@ -74,15 +73,17 @@
 
       <h2 class="choose">Pour aller plus loin ➭</h2>
 
-      <div class="grid">
+      <div class="grid grid-2">
         <article class="card extra">
           <div class="num">Étape <b>A</b></div>
           <h2>La pochette du single</h2>
-          <p>Avec l'IA de ton choix, crée la pochette de ton single&nbsp;!</p>
+          <p>Avec Midjourney, crée la pochette de ton single&nbsp;!</p>
           <details>
             <summary>Mais sais-tu seulement ce qu'est un single&nbsp;?</summary>
             <p>Un <strong>single</strong>, c'est un titre sorti seul, en avant-première d'un album, pour passer à la radio. À l'époque du vinyle, c'était un 45&nbsp;tours avec la chanson phare en face&nbsp;A… et une autre en face&nbsp;B.</p>
           </details>
+          <a class="cta" href="https://www.midjourney.com/imagine" target="_blank" rel="noopener">Ouvrir Midjourney ➭</a>
+          <span class="url">midjourney.com/imagine</span>
         </article>
 
         <article class="card extra">
@@ -95,23 +96,21 @@
             <li><kbd>Download</kbd> › <kbd>Video</kbd></li>
           </ol>
         </article>
-
-        <article class="card extra bonus">
-          <div class="num">Bonus <b>★</b></div>
-          <h2>Le mode Studio</h2>
-          <p>Essaie le mode <strong>Studio</strong> de Suno pour créer une chanson en pilotant toi-même l'ajout d'instruments, de voix…</p>
-          <p class="muted">Pour celles et ceux qui ont fini en avance.</p>
-          <a class="cta" href="https://suno.com/" target="_blank" rel="noopener">Ouvrir Suno ➭</a>
-          <span class="url">Menu Studio, dans la barre latérale</span>
-        </article>
       </div>
 
       <section class="stage-cta">
-        <div>
-          <h2>La scène 🎤</h2>
-          <p>Dépose ta chanson (MP3 ou vidéo) et ta pochette, écoute celles des autres et vote pour ton tube préféré.</p>
+        <div class="stage-text">
+          <p class="stage-eyebrow">Ta chanson est prête&nbsp;?</p>
+          <h2>Top&nbsp;50 <span aria-hidden="true">🏆</span></h2>
+          <ul>
+            <li><b>🎤</b> <strong>Dépose ta chanson</strong> (MP3 ou vidéo) et ta pochette</li>
+            <li><b>🗳️</b> <strong>Vote pour la meilleure chanson</strong> et fais grimper tes favorites sur le podium</li>
+          </ul>
         </div>
-        <a class="cta" href="/scene">Déposer &amp; voter ➭</a>
+        <div class="stage-actions">
+          <a class="cta cta-big" href="/top50#deposer">Déposer ma chanson ⬆</a>
+          <a class="cta cta-ghost" href="/top50#classement">Voter pour la meilleure ➭</a>
+        </div>
       </section>
     </div>
   </main>
@@ -122,7 +121,7 @@
         <li><span>1</span>Je compose</li>
         <li><span>2</span>J'habille ma pochette</li>
         <li><span>3</span>J'exporte mon clip</li>
-        <li><span>4</span>Je dépose sur la scène</li>
+        <li><span>4</span>Je dépose dans le Top&nbsp;50</li>
         <li><span>5</span>On vote&nbsp;!</li>
       </ol>
       <span>L'IA par tous et pour tous / iagora.fr</span>
