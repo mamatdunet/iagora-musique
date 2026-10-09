@@ -1,7 +1,7 @@
 import { del } from '@vercel/blob';
 import { randomUUID } from 'node:crypto';
 import {
-  redis, KEYS, json, blobToken, clientIp, readVoter, newVoter, underLimit, isOurBlob,
+  redis, KEYS, json, blobAuth, clientIp, readVoter, newVoter, underLimit, isOurBlob,
   VOTE_COOLDOWN, UPLOADS_PER_IP_PER_HOUR,
 } from './_lib/store.js';
 
@@ -69,7 +69,7 @@ export async function DELETE(request) {
   await Promise.all([
     redis.hdel(KEYS.entries, id),
     redis.zrem(KEYS.votes, id),
-    del([entry.mediaUrl, entry.coverUrl].filter(Boolean), { token: blobToken() }).catch(() => {}),
+    del([entry.mediaUrl, entry.coverUrl].filter(Boolean), blobAuth(request)).catch(() => {}),
   ]);
   return json({ ok: true });
 }

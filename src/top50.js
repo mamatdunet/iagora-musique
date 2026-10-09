@@ -1,4 +1,4 @@
-import { upload } from '@vercel/blob/client';
+import { upload, uploadPresigned } from '@vercel/blob/client';
 
 const $ = (sel) => document.querySelector(sel);
 const list = $('#entries');
@@ -353,6 +353,19 @@ $('#lyrics-toggle').addEventListener('click', (event) => {
   }
 });
 
+// Envoi direct vers Vercel Blob, selon le mode configuré côté serveur.
+let uploadMode;
+async function sendFile(folder, file, onProgress) {
+  uploadMode ??= await fetch('/api/upload').then((r) => r.json()).then((d) => d.mode).catch(() => null);
+  if (!uploadMode) throw new Error('le stockage des fichiers (Vercel Blob) n’est pas encore branché au site. Préviens l’équipe d’animation.');
+  const suffix = Math.random().toString(36).slice(2, 10);
+  const options = { access: 'public', handleUploadUrl: '/api/upload', onUploadProgress: onProgress };
+  if (uploadMode === 'presigned') {
+    return uploadPresigned(`${folder}/${suffix}-${safeName(file)}`, file, options);
+  }
+  return upload(`${folder}/${safeName(file)}`, file, { ...options, multipart: file.size > 20 * 1024 * 1024 });
+}
+
 function safeName(file) {
   const ext = (file.name.match(/\.[a-z0-9]{1,5}$/i) || [''])[0].toLowerCase();
   const base = file.name.replace(/\.[^.]*$/, '').normalize('NFD').replace(/[^\w-]+/g, '-').slice(0, 40) || 'fichier';
@@ -380,20 +393,12 @@ form.addEventListener('submit', async (event) => {
   progress.value = 0;
   try {
     setStatus(uploadStatus, 'Envoi de la chanson…');
-    const mediaBlob = await upload(`tubes/${safeName(media)}`, media, {
-      access: 'public',
-      handleUploadUrl: '/api/upload',
-      multipart: media.size > 20 * 1024 * 1024,
-      onUploadProgress: ({ percentage }) => { progress.value = percentage; },
-    });
+    const mediaBlob = await sendFile('tubes', media, ({ percentage }) => { progress.value = percentage; });
 
     let coverUrl = null;
     if (cover && cover.size) {
       setStatus(uploadStatus, 'Envoi de la pochette…');
-      const coverBlob = await upload(`pochettes/${safeName(cover)}`, cover, {
-        access: 'public',
-        handleUploadUrl: '/api/upload',
-      });
+      const coverBlob = await sendFile('pochettes', cover);
       coverUrl = coverBlob.url;
     }
 
@@ -421,12 +426,7 @@ form.addEventListener('submit', async (event) => {
     await refresh();
     nodes.get(result.entry.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } catch (error) {
-    let message = error.message || 'envoi impossible';
-    // Le jeton d'envoi est refusé : le plus souvent, le stockage Vercel Blob n'est pas branché.
-    if (/client token/i.test(message)) {
-      const check = await fetch('/api/upload').then((r) => r.json()).catch(() => ({}));
-      if (check.blob === false) message = 'le stockage des fichiers (Vercel Blob) n’est pas encore branché au site. Préviens l’équipe d’animation.';
-    }
+    const message = error.message || 'envoi impossible';
     setStatus(uploadStatus, `Oups : ${message}`, 'error');
   } finally {
     button.disabled = false;

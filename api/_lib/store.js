@@ -62,20 +62,37 @@ export async function underLimit(key, max, windowSeconds) {
   return count <= max;
 }
 
-// Jeton Vercel Blob : la variable standard, ou celle créée avec un préfixe
-// quand le store est connecté au projet sous un autre nom.
-export function blobToken() {
-  if (process.env.BLOB_READ_WRITE_TOKEN) return process.env.BLOB_READ_WRITE_TOKEN;
-  const found = Object.entries(process.env).find(
-    ([key, value]) => key.endsWith('READ_WRITE_TOKEN') && String(value).startsWith('vercel_blob_rw_'),
-  );
+// Accès à Vercel Blob. Deux cas selon la façon dont le store a été relié au projet :
+// - ancien mode : un jeton lecture-écriture (BLOB_READ_WRITE_TOKEN) ;
+// - nouveau mode : un identifiant de store + l'OIDC de Vercel, sans jeton.
+// Les variables peuvent porter un préfixe choisi à la connexion du store.
+function blobEnv(suffix, validate = () => true) {
+  const exact = process.env[`BLOB_${suffix}`];
+  if (exact && validate(exact)) return exact;
+  const found = Object.entries(process.env).find(([key, value]) => key.endsWith(suffix) && /BLOB/i.test(key) && validate(String(value)));
   return found ? found[1] : undefined;
+}
+
+export function blobToken() {
+  return blobEnv('READ_WRITE_TOKEN', (v) => v.startsWith('vercel_blob_rw_'));
+}
+
+export const blobStoreId = () => blobEnv('STORE_ID');
+export const blobWebhookKey = () => blobEnv('WEBHOOK_PUBLIC_KEY');
+
+// Options d'authentification à passer aux appels serveur du SDK.
+export function blobAuth(request) {
+  const token = blobToken();
+  if (token) return { token };
+  const storeId = blobStoreId();
+  const oidcToken = request?.headers.get('x-vercel-oidc-token') || process.env.VERCEL_OIDC_TOKEN || undefined;
+  return storeId ? { storeId, ...(oidcToken ? { oidcToken } : {}) } : {};
 }
 
 export function isOurBlob(url) {
   try {
     const u = new URL(url);
-    return u.protocol === 'https:' && u.hostname.endsWith('.public.blob.vercel-storage.com');
+    return u.protocol === 'https:' && u.hostname.endsWith('.blob.vercel-storage.com');
   } catch {
     return false;
   }
