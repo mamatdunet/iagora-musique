@@ -129,7 +129,25 @@ details { margin: 0 0 14px; font-size: 15px; }
 summary { cursor: pointer; font-weight: 600; color: var(--blue-600); }
 details p { margin: 8px 0 0 !important; font-size: 15px !important; }
 
-/* Bandeau Top 50 */
+/* Colonne Top 50, à droite sur toute la hauteur de l'écran */
+.page { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 100vh; min-height: 100dvh; }
+@media (min-width: 961px) {
+  body.with-aside { flex-direction: row; }
+  .with-aside .stage-cta {
+    position: sticky; top: 0; flex: none; align-self: flex-start;
+    width: clamp(300px, 26vw, 380px); height: 100vh; height: 100dvh; margin: 0;
+    flex-direction: column; flex-wrap: nowrap; align-items: stretch; justify-content: center; gap: 32px;
+    border-radius: 0; padding: 40px 32px;
+  }
+  .with-aside .stage-cta h2 { font-size: clamp(64px, 7vw, 104px); }
+  .with-aside .stage-cta ul { gap: 14px; margin-top: 20px; }
+  .with-aside .nav-pill { display: none; }
+  .with-aside .cta-big { padding: 16px 18px; font-size: clamp(17px, 1.6vw, 22px); }
+  .with-aside .cta-ghost { padding: 12px 14px; font-size: clamp(14px, 1.2vw, 17px); white-space: nowrap; }
+  .with-aside .stage-cta::after { font-size: 260px; right: -60px; bottom: -60px; }
+}
+
+/* Bandeau Top 50 (mobile) */
 .stage-cta {
   position: relative; overflow: hidden;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px;
@@ -179,7 +197,7 @@ footer .wrap {
   .card { padding: 18px 20px; }
   .num b { font-size: 40px; top: 14px; right: 20px; }
   .tag { display: none; }
-  .stage-cta { padding: 24px 22px; }
+  .stage-cta { padding: 24px 22px; margin: 0 24px 24px; }
   .stage-actions { width: 100%; }
 }
 
