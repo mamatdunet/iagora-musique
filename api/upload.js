@@ -23,7 +23,7 @@ export async function GET(request) {
   // DIAGNOSTIC TEMPORAIRE : lecture signée du fichier de test.
   if (new URL(request.url).searchParams.has('diag')) {
     const url = await playableUrl('https://f91qfnoemoyoveph.private.blob.vercel-storage.com/tubes/zz-test-diagnostic.mp3', request);
-    const res = await fetch(url, { method: 'HEAD' }).catch((e) => ({ status: e.message }));
+    const res = await fetch(url, { headers: { range: 'bytes=0-15' } }).catch((e) => ({ status: e.message }));
     return json({ mode, signed: url.includes('?'), status: res.status });
   }
   return json({ blob: Boolean(mode), mode });
