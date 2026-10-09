@@ -38,7 +38,6 @@ let current = null; // id de la chanson en cours
 let rows = new Map();
 
 function syncRows() {
-  syncPlayAll();
   for (const [id, row] of rows) {
     const active = id === current;
     row.classList.toggle('active', active);
@@ -49,74 +48,21 @@ function syncRows() {
   }
 }
 
-// « Écouter tous les hits » : enchaîne toutes les chansons, dans l'ordre du classement.
-const playAll = document.querySelector('#play-all');
-const nowPlaying = document.querySelector('#now-playing');
-let allEntries = [];
-let queue = null; // liste en cours de lecture enchaînée, ou null
-
-function start(entry) {
+function toggle(entry) {
+  if (current === entry.id) {
+    if (player.paused) player.play();
+    else player.pause();
+    return;
+  }
   current = entry.id;
   player.src = entry.mediaUrl;
   player.play().catch(() => {});
   syncRows();
 }
 
-function toggle(entry, fromQueue = false) {
-  if (!fromQueue) queue = null;
-  if (current === entry.id) {
-    if (player.paused) player.play();
-    else player.pause();
-    return;
-  }
-  start(entry);
-}
-
-function playQueue(index) {
-  const entry = queue?.[index];
-  if (!entry) {
-    queue = null;
-    current = null;
-    player.pause();
-    syncRows();
-    return;
-  }
-  queue.index = index;
-  start(entry);
-}
-
-function syncPlayAll() {
-  const inQueue = Boolean(queue);
-  const playing = inQueue && !player.paused;
-  playAll.textContent = playing ? '❚❚ Mettre en pause' : inQueue ? '▶ Reprendre la lecture' : '▶ Écouter tous les hits';
-  playAll.disabled = !allEntries.length;
-  const entry = inQueue ? queue[queue.index] : null;
-  nowPlaying.hidden = !entry;
-  if (entry) {
-    nowPlaying.querySelector('span').textContent = `${queue.index + 1}/${queue.length} · ${entry.title} — ${entry.artist}`;
-  }
-}
-
-playAll.addEventListener('click', () => {
-  if (queue) {
-    if (player.paused) player.play();
-    else player.pause();
-    return;
-  }
-  queue = [...allEntries];
-  playQueue(0);
-});
-nowPlaying.querySelector('button').addEventListener('click', () => {
-  if (queue) playQueue(queue.index + 1);
-});
-
 player.addEventListener('play', syncRows);
 player.addEventListener('pause', syncRows);
-player.addEventListener('ended', () => {
-  if (queue) return playQueue(queue.index + 1);
-  current = null;
-  syncRows();
-});
+player.addEventListener('ended', () => { current = null; syncRows(); });
 player.addEventListener('timeupdate', () => {
   const row = rows.get(current);
   if (row && Number.isFinite(player.duration)) {
@@ -127,7 +73,6 @@ player.addEventListener('timeupdate', () => {
 async function loadMiniTop() {
   try {
     const { entries } = await fetch('/api/entries', { cache: 'no-store' }).then((r) => r.json());
-    allEntries = entries;
     const top = entries.slice(0, 5);
     rows = new Map();
     miniTop.replaceChildren(...top.map((entry, i) => {

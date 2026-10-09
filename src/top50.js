@@ -274,6 +274,7 @@ function render(entries) {
     }
   }
   podium.dataset.count = String(Math.min(entries.length, 3));
+  syncPlayAll();
   empty.hidden = entries.length > 0;
   list.hidden = entries.length === 0;
   updateCooldown();
@@ -333,6 +334,74 @@ async function removeEntry(entry) {
     sessionStorage.removeItem('tube-admin');
     alert((await res.json()).error || 'Suppression impossible.');
   }
+}
+
+/* ---------- Écouter tous les hits : enchaîne les chansons dans l'ordre du classement ---------- */
+
+const playAllBtn = $('#play-all');
+let queueOn = false;
+
+const rankedMedia = () => [...podium.children]
+  .sort((a, b) => a.dataset.place - b.dataset.place)
+  .concat([...list.children])
+  .map((li) => li.querySelector('audio, video'))
+  .filter(Boolean);
+const anyPlaying = () => rankedMedia().some((m) => !m.paused);
+
+function syncPlayAll() {
+  playAllBtn.hidden = nodes.size === 0;
+  playAllBtn.textContent = queueOn && anyPlaying() ? '❚❚ Pause' : '▶ Écouter tous les hits';
+}
+
+function playMedia(media) {
+  media.closest('.entry').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return media.play();
+}
+
+playAllBtn.addEventListener('click', () => {
+  const playing = rankedMedia().find((m) => !m.paused);
+  if (queueOn && playing) {
+    playing.pause();
+    return;
+  }
+  queueOn = true;
+  const media = rankedMedia();
+  // Reprend la chanson en pause s'il y en a une entamée, sinon part du n°1.
+  const resume = media.find((m) => m.currentTime > 0 && !m.ended);
+  if (media.length) playMedia(resume || media[0]).catch(() => {});
+});
+
+document.addEventListener('ended', (event) => {
+  if (!queueOn) return;
+  const media = rankedMedia();
+  const next = media[media.indexOf(event.target) + 1];
+  if (next) {
+    next.currentTime = 0;
+    playMedia(next).catch(() => {});
+  } else {
+    queueOn = false;
+  }
+  syncPlayAll();
+}, true);
+document.addEventListener('play', syncPlayAll, true);
+document.addEventListener('pause', syncPlayAll, true);
+
+// Arrivée depuis l'accueil (« Écouter tous les hits ») : on lance la lecture si le navigateur l'autorise,
+// sinon le bouton est mis en avant pour un clic.
+async function autoPlayAll() {
+  if (new URLSearchParams(location.search).get('ecouter') !== 'tout') return;
+  history.replaceState(null, '', location.pathname + location.hash);
+  for (let i = 0; i < 40 && !nodes.size; i++) await new Promise((r) => setTimeout(r, 250));
+  if (!nodes.size) return;
+  playAllBtn.scrollIntoView({ block: 'start' });
+  queueOn = true;
+  try {
+    await playMedia(rankedMedia()[0]);
+  } catch {
+    queueOn = false;
+    playAllBtn.classList.add('attention');
+  }
+  syncPlayAll();
 }
 
 // Une seule chanson à la fois.
@@ -528,3 +597,4 @@ form.addEventListener('submit', async (event) => {
 
 refresh();
 setInterval(refresh, 15000);
+autoPlayAll();
