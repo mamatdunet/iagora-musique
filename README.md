@@ -30,4 +30,10 @@ Pensé pour un ordinateur partagé où les gens votent à tour de rôle :
 
 ## Dépôts
 
+Deux façons d'ajouter une chanson :
+
+- **Lien Suno** (recommandé) : on colle le lien de partage (`suno.com/s/…`) ou de la chanson (`suno.com/song/…`). La chanson doit être publique ; elle est lue dans le lecteur officiel de Suno (`suno.com/embed/<id>`), sans rien télécharger ni stocker. Titre et pochette sont repris de Suno. Pas d'enchaînement automatique pour ces chansons (« Écouter tous les hits »).
+- **Fichier MP3 / vidéo** : envoyé sur Vercel Blob, lu avec le lecteur du site.
+
+
 Les fichiers partent directement du navigateur vers Vercel Blob (jusqu'à 200 Mo pour la chanson, 10 Mo pour la pochette), sans passer par la limite de 4,5 Mo des fonctions. Au plus 200 dépôts par heure et par adresse IP (tout l’atelier partage souvent la même connexion).

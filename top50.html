@@ -33,13 +33,30 @@
       <section id="deposer" class="drop-section" aria-labelledby="upload-title">
         <h2 id="upload-title" class="section-title">🎤 Dépose ta chanson</h2>
         <form id="upload-form" class="upload" novalidate>
-          <label class="dropzone" id="media-zone">
-            <input name="media" type="file" class="visually-hidden" accept="audio/*,video/mp4,video/quicktime,video/webm">
-            <span class="dz-icon" aria-hidden="true">🎵</span>
-            <span class="dz-title">Glisse ta chanson ici</span>
-            <span class="dz-sub">ou <u>clique pour la choisir</u> · MP3, WAV, M4A ou vidéo MP4</span>
-            <span class="dz-file" id="media-name" hidden></span>
-          </label>
+          <div class="source-col">
+            <div class="source-tabs" role="tablist" aria-label="Comment ajouter ta chanson">
+              <button type="button" role="tab" id="tab-link" aria-selected="true" aria-controls="panel-link">🔗 Lien Suno <small>recommandé</small></button>
+              <button type="button" role="tab" id="tab-file" aria-selected="false" aria-controls="panel-file">🎵 Fichier MP3</button>
+            </div>
+
+            <div class="source-panel link-panel" id="panel-link" role="tabpanel" aria-labelledby="tab-link">
+              <label for="suno-url" class="dz-title">Colle le lien de ta chanson</label>
+              <input id="suno-url" name="suno" type="url" inputmode="url" autocomplete="off" placeholder="https://suno.com/s/… ou https://suno.com/song/…">
+              <p class="link-help">Dans Suno&nbsp;: rends ta chanson <strong>publique</strong>, puis <kbd>Share</kbd> › <kbd>Copy link</kbd>. Rien à télécharger&nbsp;!</p>
+              <p class="link-status" id="suno-status" role="status"></p>
+              <div class="suno-preview" id="suno-preview" hidden></div>
+            </div>
+
+            <div class="source-panel" id="panel-file" role="tabpanel" aria-labelledby="tab-file" hidden>
+              <label class="dropzone" id="media-zone">
+                <input name="media" type="file" class="visually-hidden" accept="audio/*,video/mp4,video/quicktime,video/webm">
+                <span class="dz-icon" aria-hidden="true">🎵</span>
+                <span class="dz-title">Glisse ta chanson ici</span>
+                <span class="dz-sub">ou <u>clique pour la choisir</u> · MP3, WAV, M4A ou vidéo MP4</span>
+                <span class="dz-file" id="media-name" hidden></span>
+              </label>
+            </div>
+          </div>
 
           <div class="fields">
             <label>Titre de la chanson
@@ -64,7 +81,7 @@
             <button class="cta cta-big" type="submit">Publier dans le Top 50 ⬆</button>
           </div>
         </form>
-        <details class="help-download" open>
+        <details class="help-download" id="help-download" open hidden>
           <summary>Tu n'arrives pas à télécharger ta musique depuis Suno&nbsp;? Passe par <strong>usesuno.com</strong></summary>
           <ol>
             <li>Dans Suno, rends ta chanson <strong>publique</strong>, puis clic sur <kbd>Share</kbd> › <kbd>Copy link</kbd> (un lien du type <em>suno.com/s/…</em>).</li>

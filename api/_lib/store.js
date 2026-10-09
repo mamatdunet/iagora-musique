@@ -113,6 +113,39 @@ export async function playableUrl(url, request) {
   }
 }
 
+// Chansons Suno : on accepte suno.com/song/<id>, suno.com/embed/<id> ou le lien court suno.com/s/<code>.
+const SUNO_ID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+export async function resolveSuno(input) {
+  let url;
+  try {
+    url = new URL(String(input).trim());
+  } catch {
+    return null;
+  }
+  if (!/(^|\.)suno\.(com|ai)$/i.test(url.hostname)) return null;
+  const direct = url.pathname.match(SUNO_ID);
+  if (direct) return direct[0].toLowerCase();
+  if (/^\/s\/[\w-]+$/.test(url.pathname)) {
+    // Lien court : Suno redirige vers /song/<id>
+    const res = await fetch(`https://suno.com${url.pathname}`, { redirect: 'manual' }).catch(() => null);
+    const location = res?.headers.get('location') || '';
+    const found = location.match(SUNO_ID);
+    return found ? found[0].toLowerCase() : null;
+  }
+  return null;
+}
+
+// Titre et pochette publics d'une chanson Suno (lus dans sa page d'intégration).
+export async function sunoInfo(id) {
+  const res = await fetch(`https://suno.com/embed/${id}`).catch(() => null);
+  if (!res?.ok) return null;
+  const page = await res.text();
+  const meta = (name) => page.match(new RegExp(`property="og:${name}"[^>]*content="([^"]*)"`))?.[1];
+  const decode = (text) => text?.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  return { id, title: decode(meta('title')) || '', image: meta('image') || null };
+}
+
 export function isOurBlob(url) {
   try {
     const u = new URL(url);

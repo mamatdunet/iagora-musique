@@ -49,6 +49,11 @@ function syncRows() {
 }
 
 function toggle(entry) {
+  // Chanson ajoutée par lien Suno : elle se lit dans le lecteur Suno, sur la page du classement.
+  if (!entry.mediaUrl) {
+    location.href = '/top50#classement';
+    return;
+  }
   if (current === entry.id) {
     if (player.paused) player.play();
     else player.pause();
@@ -90,6 +95,12 @@ async function loadMiniTop() {
         cover = document.createElement('img');
         cover.src = entry.coverUrl;
         cover.alt = '';
+        cover.addEventListener('error', () => {
+          const leaf = document.createElement('span');
+          leaf.className = 'mini-cover';
+          leaf.textContent = '🍁';
+          cover.replaceWith(leaf);
+        }, { once: true });
       } else {
         cover = document.createElement('span');
         cover.textContent = '🍁';

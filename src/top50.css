@@ -74,6 +74,40 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 .status.error { color: #c0182f; }
 .status.ok { color: #157a3c; }
 
+/* Choix : lien Suno ou fichier */
+.source-col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.source-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border: 2px solid var(--ink-900); border-radius: var(--radius-pill); background: var(--white); }
+.source-tabs button {
+  padding: 10px 12px; border: 0; border-radius: var(--radius-pill); background: transparent; cursor: pointer;
+  font-family: var(--font-display); font-size: 18px; letter-spacing: .03em; text-transform: uppercase; color: var(--ink-800);
+}
+.source-tabs button small { font-family: var(--font-body); font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--pink-700); }
+.source-tabs button[aria-selected="true"] { background: var(--blue-600); color: var(--white); }
+.source-tabs button[aria-selected="true"] small { color: var(--pink-50); }
+.source-tabs button:focus-visible { outline: 3px solid var(--pink-600); outline-offset: 2px; }
+.source-panel { flex: 1; display: flex; flex-direction: column; }
+.source-panel[hidden] { display: none; }
+.source-panel .dropzone { flex: 1; }
+.link-panel {
+  gap: 10px; padding: 24px; border: 3px dashed var(--pink-700); border-radius: var(--radius-lg); background: var(--white);
+}
+.link-panel .dz-title { font-family: var(--font-display); font-size: clamp(24px, 2.4vw, 32px); line-height: 1; text-transform: uppercase; color: var(--blue-600); }
+.link-panel input {
+  font: inherit; font-size: 16px; padding: 14px 16px; border: 2px solid var(--ink-900); border-radius: 12px; width: 100%;
+}
+.link-panel input:focus-visible { outline: none; border-color: var(--blue-600); box-shadow: 0 0 0 4px var(--blue-50); }
+.link-help { margin: 0; font-size: 14px; color: var(--ink-500); }
+.link-help kbd, .help-download kbd {
+  padding: 1px 6px; border: 1px solid var(--ink-200); border-bottom-width: 2px; border-radius: 6px;
+  background: var(--blue-50); font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--ink-800);
+}
+.link-status { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink-500); }
+.link-status:empty { display: none; }
+.link-status.ok { color: #157a3c; }
+.link-status.error { color: #c0182f; }
+.suno-embed { display: block; width: 100%; height: 200px; border: 0; border-radius: 14px; background: #1b1f3b; }
+.entries .suno-embed { height: 170px; }
+
 /* Paroles */
 .lyrics-field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; }
 .lyrics-field textarea, .lyrics-preview {

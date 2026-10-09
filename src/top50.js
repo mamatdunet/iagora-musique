@@ -63,6 +63,12 @@ function buildEntry(entry) {
     cover.src = entry.coverUrl;
     cover.alt = `Pochette de ${entry.title}`;
     cover.loading = 'lazy';
+    cover.addEventListener('error', () => {
+      const leaf = document.createElement('div');
+      leaf.className = 'cover';
+      leaf.textContent = '🍁';
+      cover.replaceWith(leaf);
+    }, { once: true });
   } else {
     cover = document.createElement('div');
     cover.textContent = '🍁';
@@ -78,7 +84,9 @@ function buildEntry(entry) {
   by.className = 'by';
   by.textContent = entry.artist;
   let media;
-  if (entry.mediaType === 'video') {
+  if (entry.mediaType === 'suno') {
+    media = sunoEmbed(entry.sunoId, entry.title);
+  } else if (entry.mediaType === 'video') {
     media = document.createElement('video');
     media.src = entry.mediaUrl;
     media.controls = true;
@@ -201,6 +209,17 @@ function buildPlayer(src, seed, title) {
     update();
   });
   return player;
+}
+
+// Lecteur officiel de Suno, pour les chansons ajoutées par lien.
+function sunoEmbed(id, title) {
+  const frame = document.createElement('iframe');
+  frame.className = 'suno-embed';
+  frame.src = `https://suno.com/embed/${id}`;
+  frame.title = `Lecteur Suno : ${title}`;
+  frame.loading = 'lazy';
+  frame.allow = 'autoplay; encrypted-media';
+  return frame;
 }
 
 /* ---------- Paroles, avec tags affichables ou masqués ---------- */
@@ -481,7 +500,7 @@ window.addEventListener('drop', (e) => {
   e.preventDefault();
   for (const file of e.dataTransfer.files) {
     if (isImage(file)) putFile(coverInput, file);
-    else if (isMedia(file)) putFile(mediaInput, file);
+    else if (isMedia(file)) { setSource('file'); putFile(mediaInput, file); }
     else accepts(mediaInput, file);
   }
   $('#deposer').scrollIntoView({ behavior: 'smooth' });
@@ -527,6 +546,60 @@ async function sendFile(folder, file, onProgress) {
   return upload(`${folder}/${safeName(file)}`, file, { ...options, multipart: file.size > 20 * 1024 * 1024 });
 }
 
+/* ---------- Lien Suno ou fichier MP3 ---------- */
+
+let source = 'link';
+let sunoFound = null;
+const sunoInput = $('#suno-url');
+const sunoStatus = $('#suno-status');
+const sunoPreview = $('#suno-preview');
+
+function setSource(next) {
+  source = next;
+  for (const [tab, panel, value] of [['#tab-link', '#panel-link', 'link'], ['#tab-file', '#panel-file', 'file']]) {
+    $(tab).setAttribute('aria-selected', String(next === value));
+    $(panel).hidden = next !== value;
+  }
+  $('#help-download').hidden = next !== 'file';
+}
+$('#tab-link').addEventListener('click', () => setSource('link'));
+$('#tab-file').addEventListener('click', () => setSource('file'));
+
+function resetSuno() {
+  sunoFound = null;
+  sunoPreview.hidden = true;
+  sunoPreview.replaceChildren();
+  sunoStatus.textContent = '';
+  sunoStatus.className = 'link-status';
+}
+
+let lookupTimer;
+async function lookupSuno() {
+  const value = sunoInput.value.trim();
+  resetSuno();
+  if (!value) return;
+  sunoStatus.textContent = 'Recherche de la chanson…';
+  try {
+    const res = await fetch(`/api/suno?url=${encodeURIComponent(value)}`);
+    const info = await res.json();
+    if (value !== sunoInput.value.trim()) return; // le lien a changé entre-temps
+    if (!res.ok) throw new Error(info.error);
+    sunoFound = info;
+    sunoStatus.textContent = `✔ Chanson trouvée : « ${info.title || 'sans titre'} »`;
+    sunoStatus.className = 'link-status ok';
+    if (!form.elements.title.value && info.title) form.elements.title.value = info.title.slice(0, 80);
+    sunoPreview.append(sunoEmbed(info.id, info.title));
+    sunoPreview.hidden = false;
+  } catch (error) {
+    sunoStatus.textContent = error.message || 'Lien introuvable.';
+    sunoStatus.className = 'link-status error';
+  }
+}
+sunoInput.addEventListener('input', () => {
+  clearTimeout(lookupTimer);
+  lookupTimer = setTimeout(lookupSuno, 400);
+});
+
 function safeName(file) {
   const ext = (file.name.match(/\.[a-z0-9]{1,5}$/i) || [''])[0].toLowerCase();
   const base = file.name.replace(/\.[^.]*$/, '').normalize('NFD').replace(/[^\w-]+/g, '-').slice(0, 40) || 'fichier';
@@ -539,7 +612,13 @@ form.addEventListener('submit', async (event) => {
   const data = new FormData(form);
   const media = data.get('media');
   const cover = data.get('cover');
-  if (!media || !media.size) {
+  const byLink = source === 'link';
+  if (byLink && !sunoFound) {
+    setStatus(uploadStatus, 'Colle d’abord le lien Suno de ta chanson 🔗', 'error');
+    sunoInput.focus();
+    return;
+  }
+  if (!byLink && (!media || !media.size)) {
     setStatus(uploadStatus, 'Ajoute d’abord ta chanson dans la grande zone 🎵', 'error');
     mediaZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
@@ -553,8 +632,11 @@ form.addEventListener('submit', async (event) => {
   progress.hidden = false;
   progress.value = 0;
   try {
-    setStatus(uploadStatus, 'Envoi de la chanson…');
-    const mediaBlob = await sendFile('tubes', media, ({ percentage }) => { progress.value = percentage; });
+    let mediaBlob = null;
+    if (!byLink) {
+      setStatus(uploadStatus, 'Envoi de la chanson…');
+      mediaBlob = await sendFile('tubes', media, ({ percentage }) => { progress.value = percentage; });
+    }
 
     let coverUrl = null;
     if (cover && cover.size) {
@@ -569,8 +651,9 @@ form.addEventListener('submit', async (event) => {
       body: JSON.stringify({
         title: data.get('title'),
         artist: data.get('artist'),
-        mediaUrl: mediaBlob.url,
-        mediaType: media.type,
+        ...(byLink
+          ? { sunoUrl: sunoInput.value }
+          : { mediaUrl: mediaBlob.url, mediaType: media.type }),
         coverUrl,
         lyrics: data.get('lyrics'),
       }),
@@ -579,6 +662,7 @@ form.addEventListener('submit', async (event) => {
     if (!res.ok) throw new Error(result.error);
 
     form.reset();
+    resetSuno();
     lyricsInput.hidden = false;
     lyricsPreview.hidden = true;
     $('#lyrics-toggle').textContent = 'Aperçu sans les tags';

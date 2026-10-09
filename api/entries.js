@@ -1,7 +1,7 @@
 import { del } from '@vercel/blob';
 import { randomUUID } from 'node:crypto';
 import {
-  redis, KEYS, json, blobAuth, playableUrl, clientIp, readVoter, newVoter, underLimit, isOurBlob,
+  redis, KEYS, json, blobAuth, playableUrl, resolveSuno, sunoInfo, clientIp, readVoter, newVoter, underLimit, isOurBlob,
   VOTE_COOLDOWN, UPLOADS_PER_IP_PER_HOUR,
 } from './_lib/store.js';
 
@@ -21,7 +21,7 @@ export async function GET(request) {
     .map(async (e) => ({
       ...e,
       mediaUrl: await playableUrl(e.mediaUrl, request),
-      coverUrl: await playableUrl(e.coverUrl, request),
+      coverUrl: (await playableUrl(e.coverUrl, request)) || e.sunoCover || null,
       votes: votes[e.id] || 0,
     })));
   list.sort((a, b) => b.votes - a.votes || a.createdAt - b.createdAt);
@@ -43,20 +43,25 @@ export async function POST(request) {
     return json({ error: 'Trop de dépôts depuis ce réseau, réessaie plus tard.' }, 429);
   }
   const body = await request.json().catch(() => ({}));
+  const sunoId = body.sunoUrl ? await resolveSuno(body.sunoUrl) : null;
+  if (body.sunoUrl && !sunoId) return json({ error: 'Ce lien Suno n’est pas reconnu.' }, 400);
   const entry = {
     id: randomUUID().slice(0, 8),
     title: clean(body.title, 80),
     artist: clean(body.artist, 80),
-    mediaUrl: String(body.mediaUrl || ''),
-    mediaType: String(body.mediaType || '').startsWith('video/') ? 'video' : 'audio',
+    mediaUrl: sunoId ? null : String(body.mediaUrl || ''),
+    mediaType: sunoId ? 'suno' : String(body.mediaType || '').startsWith('video/') ? 'video' : 'audio',
+    sunoId,
     coverUrl: body.coverUrl ? String(body.coverUrl) : null,
     lyrics: String(body.lyrics ?? '').replace(/\r\n?/g, '\n').trim().slice(0, 6000),
     createdAt: Date.now(),
   };
   if (!entry.title || !entry.artist) return json({ error: 'Titre et nom d’artiste obligatoires.' }, 400);
-  if (!isOurBlob(entry.mediaUrl) || (entry.coverUrl && !isOurBlob(entry.coverUrl))) {
+  if ((!sunoId && !isOurBlob(entry.mediaUrl)) || (entry.coverUrl && !isOurBlob(entry.coverUrl))) {
     return json({ error: 'Fichier invalide.' }, 400);
   }
+  // Pas de pochette envoyée : on reprend celle de Suno.
+  if (sunoId && !entry.coverUrl) entry.sunoCover = (await sunoInfo(sunoId))?.image || null;
   await redis.hset(KEYS.entries, { [entry.id]: JSON.stringify(entry) });
   return json({ entry: { ...entry, votes: 0 } }, 201);
 }
@@ -74,7 +79,7 @@ export async function DELETE(request) {
   await Promise.all([
     redis.hdel(KEYS.entries, id),
     redis.zrem(KEYS.votes, id),
-    del([entry.mediaUrl, entry.coverUrl].filter(Boolean), blobAuth(request)).catch(() => {}),
+    del([entry.mediaUrl, entry.coverUrl].filter((u) => u && isOurBlob(u)), blobAuth(request)).catch(() => {}),
   ]);
   return json({ ok: true });
 }
