@@ -47,15 +47,15 @@
         <article class="card">
           <div class="num">Niveau <span class="difficulty" aria-label="Moyen">●●○</span> <b>2</b></div>
           <h2>Parolier IA</h2>
-          <p>Fais écrire les paroles par l'IA de ton choix <em>(ChatGPT, Mistral, Gemini…)</em>.</p>
+          <p>Fais écrire les paroles par l'IA de ton choix, avec les méta-tags Suno pour piloter le son.</p>
           <ol>
+            <li>Ouvre ton IA&nbsp;: <a class="chip" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> <a class="chip" href="https://chat.mistral.ai/" target="_blank" rel="noopener">Le Chat Mistral</a> <a class="chip" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></li>
             <li>Demande-lui d'écrire les paroles de ta chanson</li>
-            <li>À la fin de ton prompt, colle le texte de la page <a href="https://bit.ly/tagsuno" target="_blank" rel="noopener">bit.ly/tagsuno</a> (les balises Suno&nbsp;: couplet, refrain…)</li>
-            <li>Copie-colle les paroles obtenues dans Suno</li>
-            <li>Regénère ton son</li>
+            <li>À la fin de ton prompt, <strong>colle le guide des méta-tags Suno</strong> (bouton ci-dessous)</li>
+            <li>Copie-colle les paroles obtenues dans Suno et regénère ton son</li>
           </ol>
-          <a class="cta" href="https://bit.ly/tagsuno" target="_blank" rel="noopener">Les tags Suno ➭</a>
-          <span class="url">bit.ly/tagsuno</span>
+          <button class="cta" type="button" id="copy-tags">📋 Copier le guide des tags</button>
+          <a class="url" href="https://docs.google.com/document/d/1Qg5pH6hIV9hvwBcZRQhxaljTp8j9GCxkRn1xULzIJsQ/edit?usp=sharing" target="_blank" rel="noopener">Voir le guide des méta-tags en détail ↗</a>
         </article>
 
         <article class="card">
@@ -129,5 +129,6 @@
       <a class="cta cta-ghost" href="/top50#classement">Voter pour la meilleure ➭</a>
     </div>
   </aside>
+  <script type="module" src="/src/index.js"></script>
 </body>
 </html>
