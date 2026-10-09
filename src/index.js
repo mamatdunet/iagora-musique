@@ -30,17 +30,61 @@ button.addEventListener('click', async () => {
 });
 
 // Colonne Top 50 : les 5 chansons les plus votées, mises à jour toutes les 30 s.
+// Un clic sur une chanson la lit directement ici.
 const miniTop = document.querySelector('#mini-top');
+const miniLabel = document.querySelector('#mini-label');
+const player = new Audio();
+let current = null; // id de la chanson en cours
+let rows = new Map();
+
+function syncRows() {
+  for (const [id, row] of rows) {
+    const active = id === current;
+    row.classList.toggle('active', active);
+    row.classList.toggle('playing', active && !player.paused);
+    row.querySelector('.mini-cover-wrap').dataset.icon = active && !player.paused ? '❚❚' : '▶';
+    row.querySelector('button').setAttribute('aria-pressed', String(active && !player.paused));
+    if (!active) row.style.setProperty('--progress', '0%');
+  }
+}
+
+function toggle(entry) {
+  if (current === entry.id) {
+    if (player.paused) player.play();
+    else player.pause();
+    return;
+  }
+  current = entry.id;
+  player.src = entry.mediaUrl;
+  player.play().catch(() => {});
+  syncRows();
+}
+
+player.addEventListener('play', syncRows);
+player.addEventListener('pause', syncRows);
+player.addEventListener('ended', () => { current = null; syncRows(); });
+player.addEventListener('timeupdate', () => {
+  const row = rows.get(current);
+  if (row && Number.isFinite(player.duration)) {
+    row.style.setProperty('--progress', `${(player.currentTime / player.duration) * 100}%`);
+  }
+});
 
 async function loadMiniTop() {
   try {
     const { entries } = await fetch('/api/entries', { cache: 'no-store' }).then((r) => r.json());
-    miniTop.replaceChildren(...entries.slice(0, 5).map((entry, i) => {
+    const top = entries.slice(0, 5);
+    rows = new Map();
+    miniTop.replaceChildren(...top.map((entry, i) => {
       const li = document.createElement('li');
-      const link = document.createElement('a');
-      link.href = '/top50#classement';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.title = `Écouter « ${entry.title} »`;
+      button.addEventListener('click', () => toggle(entry));
       const rank = document.createElement('b');
       rank.textContent = ['🥇', '🥈', '🥉'][i] || String(i + 1);
+      const wrap = document.createElement('span');
+      wrap.className = 'mini-cover-wrap';
       let cover;
       if (entry.coverUrl) {
         cover = document.createElement('img');
@@ -51,6 +95,7 @@ async function loadMiniTop() {
         cover.textContent = '🍁';
       }
       cover.className = 'mini-cover';
+      wrap.append(cover);
       const text = document.createElement('span');
       text.className = 'mini-text';
       const title = document.createElement('strong');
@@ -62,16 +107,19 @@ async function loadMiniTop() {
       votes.className = 'mini-votes';
       votes.textContent = `${entry.votes} ♥`;
       votes.title = `${entry.votes} vote${entry.votes > 1 ? 's' : ''}`;
-      link.append(rank, cover, text, votes);
-      li.append(link);
+      button.append(rank, wrap, text, votes);
+      li.append(button);
+      rows.set(entry.id, li);
       return li;
     }));
-    if (!entries.length) {
+    miniLabel.hidden = !top.length;
+    if (!top.length) {
       const li = document.createElement('li');
       li.className = 'mini-empty';
       li.textContent = 'Pas encore de chanson… sois la première ou le premier !';
       miniTop.append(li);
     }
+    syncRows();
   } catch {
     // Classement indisponible : la colonne reste utilisable sans lui.
   }

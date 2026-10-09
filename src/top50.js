@@ -33,7 +33,8 @@ function updateCooldown() {
   const left = Math.ceil((cooldownUntil - Date.now()) / 1000);
   const active = left > 0;
   cooldownBox.hidden = !active;
-  cooldownLeft.textContent = String(Math.max(left, 0));
+  const rest = Math.max(left, 0);
+  cooldownLeft.textContent = `${Math.floor(rest / 60)}:${String(rest % 60).padStart(2, '0')}`;
   for (const btn of document.querySelectorAll('.entry .vote .cta')) btn.disabled = active;
   if (!active) {
     clearInterval(tick);

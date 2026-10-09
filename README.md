@@ -14,7 +14,7 @@ Landing page de l'atelier IAgora « Tube de l'automne » : créer une chanson av
    - ajouter **Upstash for Redis** (Marketplace) → ajoute `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
 3. Variables d'environnement facultatives (voir `.env.example`) :
    - `ADMIN_PASSWORD` : permet de supprimer une création depuis `/top50?admin` ;
-   - `VOTE_COOLDOWN_SECONDS` (30 par défaut), `VOTES_PER_IP_PER_MINUTE` (20 par défaut) ;
+   - `VOTE_COOLDOWN_SECONDS` (120 par défaut), `VOTES_PER_IP_PER_MINUTE` (20 par défaut) ;
    - `VOTE_SECRET` : clé de signature des identifiants de poste.
 4. Redéployer.
 
@@ -24,7 +24,7 @@ En local : `npm install` puis `vercel dev` (les variables se récupèrent avec `
 
 Pensé pour un ordinateur partagé où les gens votent à tour de rôle :
 
-- **Un vote par poste toutes les 30 s.** Chaque navigateur reçoit un identifiant signé (cookie `HttpOnly`). Après un vote, le serveur refuse tout autre vote de ce poste pendant la pause, et la page grise les boutons avec un compte à rebours « Passe la main 👋 ».
+- **Un vote par poste toutes les 2 minutes.** Chaque navigateur reçoit un identifiant signé (cookie `HttpOnly`). Après un vote, le serveur refuse tout autre vote de ce poste pendant la pause, et la page grise les boutons avec un compte à rebours « Passe la main 👋 ».
 - **Plafond par réseau** : au-delà de 20 votes par minute depuis la même adresse IP, les votes sont refusés pendant une minute (bloque les scripts qui effacent leurs cookies).
 - Les boutons sont verrouillés dès le clic, donc marteler le bouton ne compte qu'un vote.
 

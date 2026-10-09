@@ -15,7 +15,7 @@ export const KEYS = {
   ipUploads: (ip) => `tube:ipuploads:${ip}`,
 };
 
-export const VOTE_COOLDOWN = Number(process.env.VOTE_COOLDOWN_SECONDS) || 30;
+export const VOTE_COOLDOWN = Number(process.env.VOTE_COOLDOWN_SECONDS) || 120;
 export const VOTES_PER_IP_PER_MINUTE = Number(process.env.VOTES_PER_IP_PER_MINUTE) || 20;
 export const UPLOADS_PER_IP_PER_HOUR = 20;
 

@@ -223,7 +223,7 @@ details p { margin: 8px 0 0 !important; font-size: 15px !important; }
   .with-aside .nav-pill { display: none; }
   .with-aside h1 { font-size: clamp(38px, 6.2vw, 96px); }
   .with-aside .cta-big { padding: 16px 18px; font-size: clamp(17px, 1.6vw, 22px); }
-  .with-aside .cta-ghost { padding: 12px 14px; font-size: clamp(14px, 1.2vw, 17px); white-space: nowrap; }
+  .with-aside .cta-ghost { padding: 14px 16px; font-size: clamp(17px, 1.6vw, 22px); white-space: nowrap; }
   .with-aside .stage-cta::after { font-size: 260px; right: -60px; bottom: -60px; }
 }
 
@@ -239,23 +239,45 @@ details p { margin: 8px 0 0 !important; font-size: 15px !important; }
   opacity: .14; transform: rotate(-18deg); pointer-events: none;
 }
 .stage-eyebrow {
-  margin: 0 0 4px; font-size: 13px; font-weight: 700; letter-spacing: .18em;
+  margin: 0 0 8px; font-size: clamp(17px, 1.6vw, 22px); font-weight: 700; letter-spacing: .12em;
   text-transform: uppercase; color: var(--pink-600);
 }
 .stage-cta h2 {
   margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(44px, 6vw, 72px);
   line-height: .95; text-transform: uppercase;
 }
+.stage-cta h2 small {
+  display: block; margin-bottom: 4px; font-size: .38em; line-height: 1; letter-spacing: .03em; color: rgba(255, 255, 255, .85);
+}
+.mini-label {
+  position: relative; z-index: 1; margin: 18px 0 0; font-size: 12px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: rgba(255, 255, 255, .75);
+}
+.mini-label + .mini-top { margin-top: 8px; }
 .stage-cta ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; font-size: 17px; }
 .stage-cta ul b { display: inline-block; width: 26px; }
 .mini-top { position: relative; z-index: 1; list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 6px; }
 .mini-top:empty { display: none; }
-.mini-top a {
+.mini-top button {
+  position: relative; overflow: hidden; width: 100%; cursor: pointer; text-align: left; font: inherit; border: 0;
   display: grid; grid-template-columns: 26px 36px minmax(0, 1fr) auto; align-items: center; gap: 10px;
   padding: 6px 10px 6px 6px; border-radius: 12px; background: rgba(255, 255, 255, .12);
-  color: var(--white); text-decoration: none; transition: background-color 160ms var(--ease-out);
+  color: var(--white); transition: background-color 160ms var(--ease-out);
 }
-.mini-top a:hover { background: rgba(255, 255, 255, .24); }
+.mini-top button:hover, .mini-top .active button { background: rgba(255, 255, 255, .24); }
+.mini-top button:focus-visible { outline: 3px solid var(--pink-600); outline-offset: 2px; }
+/* Barre de progression de la lecture, en bas de la ligne */
+.mini-top button::after {
+  content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: var(--progress, 0%);
+  background: var(--pink-600); transition: width 250ms linear;
+}
+.mini-cover-wrap { position: relative; display: block; width: 36px; height: 36px; }
+.mini-cover-wrap::after {
+  content: attr(data-icon); position: absolute; inset: 0; display: grid; place-items: center; border-radius: 8px;
+  background: rgba(20, 20, 26, .55); color: var(--white); font-size: 13px; letter-spacing: -1px;
+  opacity: 0; transition: opacity 160ms var(--ease-out);
+}
+.mini-top button:hover .mini-cover-wrap::after, .mini-top .active .mini-cover-wrap::after { opacity: 1; }
 .mini-top b { text-align: center; font-family: var(--font-display); font-weight: 400; font-size: 18px; }
 .mini-cover {
   display: grid; place-items: center; width: 36px; height: 36px; border-radius: 8px; object-fit: cover;
@@ -271,7 +293,7 @@ details p { margin: 8px 0 0 !important; font-size: 15px !important; }
 .stage-cta .cta { align-self: stretch; justify-content: center; }
 .cta-big { padding: 18px 30px; font-size: 22px; background: var(--pink-600); color: var(--ink-900); }
 .cta-big:hover { background: var(--white); color: var(--ink-900); }
-.cta-ghost { background: transparent; color: var(--white); box-shadow: inset 0 0 0 2px var(--white); }
+.cta-ghost { padding: 16px 26px; font-size: 20px; background: transparent; color: var(--white); box-shadow: inset 0 0 0 2px var(--white); }
 .cta-ghost:hover { background: var(--white); color: var(--blue-600); }
 
 .nav-pill {
