@@ -118,6 +118,7 @@ h1 {
 
 /* Cartes */
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .card {
   position: relative; display: flex; flex-direction: column;
   padding: 24px 26px 22px; border: 2px solid var(--ink-900); border-radius: var(--radius-lg);
@@ -162,6 +163,21 @@ kbd {
 .card .cta { margin-top: auto; }
 .url { display: block; margin-top: 10px; font-size: 13px; color: var(--ink-500); }
 a.url { font-weight: 600; color: var(--blue-600); }
+.icon-key { padding: 2px 6px; background: var(--ink-900); border-color: var(--ink-900); font-size: 16px; }
+.cta-pair { margin-top: auto; display: flex; flex-wrap: wrap; gap: 10px; }
+.card .cta-pair .cta { margin-top: 0; }
+.cta-outline { background: var(--white); color: var(--blue-600); box-shadow: inset 0 0 0 2px var(--blue-600); }
+.cta-outline:hover { background: var(--blue-600); color: var(--white); }
+.warning {
+  padding: 10px 12px; border-radius: 12px; background: #fff4d6; border: 2px solid #f0b429;
+  font-size: 14px !important; font-weight: 600; color: var(--ink-900);
+}
+.cover-example { margin: 0 0 16px; }
+.cover-example img {
+  display: block; width: 100%; max-width: 260px; height: auto; border-radius: 12px; border: 2px solid var(--ink-900);
+  box-shadow: 6px 6px 0 var(--pink-600); transform: rotate(-2deg);
+}
+.cover-example figcaption { margin-top: 10px; font-size: 13px; color: var(--ink-500); }
 .cta.copied { background: #1f9d4f; color: var(--white); }
 .chip {
   display: inline-block; margin: 2px 2px 2px 0; padding: 1px 10px; border: 1.5px solid var(--blue-600);

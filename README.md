@@ -2,7 +2,7 @@
 
 Landing page de l'atelier IAgora « Tube de l'automne » : créer une chanson avec Suno, en niveaux de difficulté croissants, puis la déposer dans le **Top 50** (`/top50`) où tout le monde peut l'écouter et voter.
 
-- `index.html` : boîte à inspi (idées de chansons), les niveaux (1 · Partisan du moindre effort, 2 · Les TAGS pour faire mieux avec bouton de copie du guide `src/tags-suno.md`, 3 · Sur mesure) + étapes pochette (Midjourney), clip à paroles et atelier instru.
+- `index.html` : boîte à inspi (idées de chansons), les niveaux (1 · Partisan du moindre effort, 2 · Les TAGS pour faire mieux avec bouton de copie du guide `src/tags-suno.md`, 3 · Sur mesure) + pochette (Midjourney) et atelier instru.
 - `top50.html` : dépôt par glisser-déposer d'une chanson (audio ou vidéo) + pochette, podium du top 3, classement et vote. L'ancienne adresse `/scene` redirige ici.
 - `api/` : fonctions Vercel (dépôt via Vercel Blob, données et votes dans Upstash Redis).
 

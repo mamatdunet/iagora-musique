@@ -15,7 +15,7 @@
   <div class="page">
   <header>
     <div class="wrap">
-      <a href="https://iagora.fr/" aria-label="IAgora"><img class="logo" src="/assets/logo-iagora.png" alt="IAgora"></a>
+      <a href="/" aria-label="Accueil Tube de l'automne"><img class="logo" src="/assets/logo-iagora.png" alt="IAgora"></a>
       <span class="tag">Atelier musique · Suno · Défis croissants</span>
       <a class="nav-link nav-pill" href="/top50">🏆 Top 50</a>
     </div>
@@ -44,7 +44,7 @@
           </ol>
           <details>
             <summary>Un peu plus de contrôle&nbsp;? Onglet Advanced</summary>
-            <p>Dans <kbd>Lyrics</kbd>, clic sur <kbd>✨</kbd> pour faire écrire les paroles. Dans <kbd>Styles</kbd>, choisis des styles proposés ou clic sur <kbd>🪄</kbd>. Puis <kbd>Create</kbd>.</p>
+            <p>Dans <kbd>Lyrics</kbd>, clic sur <kbd class="icon-key">✨</kbd> pour faire écrire les paroles. Dans <kbd>Styles</kbd>, choisis des styles proposés ou clic sur <kbd class="icon-key">🪄</kbd>. Puis <kbd>Create</kbd>.</p>
           </details>
           <a class="cta" href="https://suno.com/create" target="_blank" rel="noopener">Ouvrir Suno ➭</a>
           <span class="url">suno.com/create</span>
@@ -53,19 +53,21 @@
         <article class="card">
           <div class="num">Niveau <span class="difficulty" aria-label="Moyen">●●○</span> <b>2</b></div>
           <h2>Les TAGS pour faire mieux</h2>
-          <p>Les méta-tags entre crochets disent à Suno comment chaque partie doit sonner.</p>
+          <p>Suno permet d'ajouter quelques mots-clés entre crochets entre les paroles pour mieux piloter la voix &amp; l'instru.</p>
           <ol>
             <li>Deux voies, qui peuvent se mélanger&nbsp;:
               <ul class="ways">
                 <li><b>A</b><span>Écris les paroles de ta chanson et aide-toi des tags ci-dessous pour la personnaliser.</span></li>
-                <li><b>B</b><span>Demande à un outil IA de ton choix (<a class="chip" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> <a class="chip" href="https://chat.mistral.ai/" target="_blank" rel="noopener">Le Chat Mistral</a> <a class="chip" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a>…) d'écrire tout ou partie des paroles, et copie-colle le guide des tags ci-dessous à la fin de ton prompt.</span></li>
+                <li><b>B</b><span>Demande à un outil IA de ton choix (<a href="https://chatgpt.com/" target="_blank" rel="noopener">chatgpt.com</a>, <a href="https://chat.mistral.ai/" target="_blank" rel="noopener">chat.mistral.ai</a>, <a href="https://gemini.google.com/" target="_blank" rel="noopener">gemini.google.com</a>…) d'écrire tout ou partie des paroles, et copie-colle le guide des tags ci-dessous à la fin de ton prompt.</span></li>
               </ul>
             </li>
             <li>Dans Suno&nbsp;: <kbd>Create</kbd> › <kbd>Advanced</kbd>, colle les paroles dans <kbd>Lyrics</kbd> et le style dans <kbd>Styles</kbd></li>
             <li>Clic sur <kbd>Create</kbd></li>
           </ol>
-          <button class="cta" type="button" id="copy-tags">📋 Copier le guide des tags</button>
-          <a class="url" href="https://docs.google.com/document/d/1Qg5pH6hIV9hvwBcZRQhxaljTp8j9GCxkRn1xULzIJsQ/edit?tab=t.0#heading=h.a1qvl46q4f2x" target="_blank" rel="noopener">Voir le guide des méta-tags en détail ↗</a>
+          <div class="cta-pair">
+            <button class="cta" type="button" id="copy-tags">📋 Copier le guide des tags</button>
+            <a class="cta cta-outline" href="https://docs.google.com/document/d/1Qg5pH6hIV9hvwBcZRQhxaljTp8j9GCxkRn1xULzIJsQ/edit?tab=t.0#heading=h.a1qvl46q4f2x" target="_blank" rel="noopener">Voir le guide en détail ↗</a>
+          </div>
         </article>
 
         <article class="card">
@@ -78,6 +80,7 @@
             <li>Ajoute des tags au début de chaque section pour sculpter le son</li>
             <li>Regénère, compare les versions, garde la meilleure</li>
           </ol>
+          <p class="warning">⚠️ Attention, pas de données confidentielles dans les paroles.</p>
           <a class="cta" href="https://suno.com/create" target="_blank" rel="noopener">Ouvrir Suno ➭</a>
           <span class="url">suno.com/create</span>
         </article>
@@ -85,11 +88,15 @@
 
       <h2 class="choose">Pour aller plus loin ➭</h2>
 
-      <div class="grid">
+      <div class="grid grid-2">
         <article class="card extra">
           <div class="num">Étape <b>A</b></div>
           <h2>La pochette du single</h2>
           <p>Avec Midjourney, crée la pochette de ton single&nbsp;!</p>
+          <figure class="cover-example">
+            <img src="/assets/pochette-mairiagora.webp" alt="Exemple de pochette : « Mairiagora, le hit de l'été », maxi 45 tours version club, façon années 80" width="640" height="640" loading="lazy">
+            <figcaption>Exemple&nbsp;: «&nbsp;Mairiagora&nbsp;», maxi 45&nbsp;T version club</figcaption>
+          </figure>
           <details>
             <summary>Mais sais-tu seulement ce qu'est un single&nbsp;?</summary>
             <p>Un <strong>single</strong>, c'est un titre sorti seul, en avant-première d'un album, pour passer à la radio. À l'époque du vinyle, c'était un 45&nbsp;tours avec la chanson phare en face&nbsp;A… et une autre en face&nbsp;B.</p>
@@ -100,17 +107,6 @@
 
         <article class="card extra">
           <div class="num">Étape <b>B</b></div>
-          <h2>N'oubliez pas les paroles&nbsp;! 🎤</h2>
-          <p>Exporte la vidéo de ta chanson avec les paroles qui défilent.</p>
-          <ol>
-            <li>Menu <kbd>Library</kbd></li>
-            <li>Sur les <kbd>…</kbd> de ta chanson (ou clic droit)</li>
-            <li><kbd>Download</kbd> › <kbd>Video</kbd></li>
-          </ol>
-        </article>
-
-        <article class="card extra">
-          <div class="num">Étape <b>C</b></div>
           <h2>Atelier instru</h2>
           <p>Compose une instru originale en choisissant style, ambiance, instruments et tempo. L'IA tourne directement dans ton navigateur, rien n'est envoyé en ligne.</p>
           <p class="muted">À tester sur un ordinateur récent pour des résultats rapides.</p>
@@ -126,9 +122,8 @@
       <ol class="steps">
         <li><span>1</span>Je compose</li>
         <li><span>2</span>J'habille ma pochette</li>
-        <li><span>3</span>J'exporte mon clip</li>
-        <li><span>4</span>Je dépose dans le Top&nbsp;50</li>
-        <li><span>5</span>On vote&nbsp;!</li>
+                <li><span>3</span>Je dépose dans le Top&nbsp;50</li>
+        <li><span>4</span>On vote&nbsp;!</li>
       </ol>
       <span>L'IA par tous et pour tous / iagora.fr</span>
     </div>

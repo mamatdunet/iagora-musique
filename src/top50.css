@@ -74,6 +74,18 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 .status.error { color: #c0182f; }
 .status.ok { color: #157a3c; }
 
+/* Aide au téléchargement depuis Suno */
+.help-download {
+  margin-top: 18px; padding: 14px 18px; border-radius: 16px; background: var(--white); border: 2px dashed var(--ink-900);
+}
+.help-download summary { cursor: pointer; font-weight: 600; color: var(--blue-600); }
+.help-download ol { margin: 12px 0 14px; padding-left: 22px; display: grid; gap: 6px; }
+.help-download ol li::marker { color: var(--pink-700); font-weight: 700; }
+.help-download kbd {
+  padding: 1px 6px; border: 1px solid var(--ink-200); border-bottom-width: 2px; border-radius: 6px;
+  background: var(--blue-50); font-family: var(--font-body); font-size: 14px; font-weight: 600;
+}
+
 /* Classement */
 .ranking { margin-top: 40px; }
 .ranking-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; }
