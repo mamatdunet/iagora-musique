@@ -5,8 +5,14 @@ const MEDIA_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'aud
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 // Diagnostic : le stockage des fichiers est-il branché ?
+// (noms des variables seulement, jamais leurs valeurs)
 export function GET() {
-  return json({ blob: Boolean(blobToken()) });
+  return json({
+    blob: Boolean(blobToken()),
+    storeId: Boolean(process.env.BLOB_STORE_ID),
+    oidc: Boolean(process.env.VERCEL_OIDC_TOKEN),
+    vars: Object.keys(process.env).filter((k) => /BLOB/i.test(k)).sort(),
+  });
 }
 
 // Délivre au navigateur un jeton d'envoi direct vers Vercel Blob
