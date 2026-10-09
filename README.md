@@ -30,4 +30,4 @@ Pensé pour un ordinateur partagé où les gens votent à tour de rôle :
 
 ## Dépôts
 
-Les fichiers partent directement du navigateur vers Vercel Blob (jusqu'à 200 Mo pour la chanson, 10 Mo pour la pochette), sans passer par la limite de 4,5 Mo des fonctions. Au plus 20 dépôts par heure et par adresse IP.
+Les fichiers partent directement du navigateur vers Vercel Blob (jusqu'à 200 Mo pour la chanson, 10 Mo pour la pochette), sans passer par la limite de 4,5 Mo des fonctions. Au plus 200 dépôts par heure et par adresse IP (tout l’atelier partage souvent la même connexion).

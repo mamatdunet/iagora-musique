@@ -17,7 +17,7 @@ export const KEYS = {
 
 export const VOTE_COOLDOWN = Number(process.env.VOTE_COOLDOWN_SECONDS) || 120;
 export const VOTES_PER_IP_PER_MINUTE = Number(process.env.VOTES_PER_IP_PER_MINUTE) || 20;
-export const UPLOADS_PER_IP_PER_HOUR = 20;
+export const UPLOADS_PER_IP_PER_HOUR = 200; // tout l'atelier partage souvent la même IP (Wi-Fi)
 
 export const VOTER_COOKIE = 'tube_voter';
 
