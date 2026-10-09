@@ -10,7 +10,7 @@ Landing page de l'atelier IAgora « Tube de l'automne » : créer une chanson av
 
 1. Importer le dépôt dans Vercel (preset **Vite**, rien à changer).
 2. Onglet **Storage** du projet :
-   - créer un store **Blob** → ajoute `BLOB_READ_WRITE_TOKEN` ;
+   - créer un store **Blob** et le connecter au projet. Les deux modes sont gérés : ancien jeton `BLOB_READ_WRITE_TOKEN`, ou nouveau mode identifiant de store + OIDC (`…_STORE_ID`, préfixe libre). Avec un store **privé**, les chansons sont lues via des liens signés valables 12 h ;
    - ajouter **Upstash for Redis** (Marketplace) → ajoute `KV_REST_API_URL` / `KV_REST_API_TOKEN`.
 3. Variables d'environnement facultatives (voir `.env.example`) :
    - `ADMIN_PASSWORD` : permet de supprimer une création depuis `/top50?admin` ;
