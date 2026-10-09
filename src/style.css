@@ -168,6 +168,13 @@ a.url { font-weight: 600; color: var(--blue-600); }
 .card .cta-pair .cta { margin-top: 0; }
 .cta-outline { background: var(--white); color: var(--blue-600); box-shadow: inset 0 0 0 2px var(--blue-600); }
 .cta-outline:hover { background: var(--blue-600); color: var(--white); }
+.choose-row { align-items: end; margin-top: 18px; }
+.choose-row .choose { grid-column: 1 / 3; margin-top: 14px; }
+.choose-row .warning { grid-column: 3; margin: 0 0 12px; }
+@media (max-width: 960px) {
+  .choose-row .choose, .choose-row .warning { grid-column: 1; }
+  .choose-row .warning { margin: 0 0 14px; }
+}
 .warning {
   padding: 10px 12px; border-radius: 12px; background: #fff4d6; border: 2px solid #f0b429;
   font-size: 14px !important; font-weight: 600; color: var(--ink-900);
