@@ -60,8 +60,12 @@ export async function POST(request) {
   if ((!sunoId && !isOurBlob(entry.mediaUrl)) || (entry.coverUrl && !isOurBlob(entry.coverUrl))) {
     return json({ error: 'Fichier invalide.' }, 400);
   }
-  // Pas de pochette envoyée : on reprend celle de Suno.
-  if (sunoId && !entry.coverUrl) entry.sunoCover = (await sunoInfo(sunoId))?.image || null;
+  // Chanson Suno : on reprend sa pochette et ses paroles si elles n'ont pas été fournies.
+  if (sunoId) {
+    const info = await sunoInfo(sunoId);
+    if (!entry.coverUrl) entry.sunoCover = info?.image || null;
+    if (!entry.lyrics) entry.lyrics = info?.lyrics || '';
+  }
   await redis.hset(KEYS.entries, { [entry.id]: JSON.stringify(entry) });
   return json({ entry: { ...entry, votes: 0 } }, 201);
 }

@@ -143,7 +143,31 @@ export async function sunoInfo(id) {
   const page = await res.text();
   const meta = (name) => page.match(new RegExp(`property="og:${name}"[^>]*content="([^"]*)"`))?.[1];
   const decode = (text) => text?.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-  return { id, title: decode(meta('title')) || '', image: meta('image') || null };
+  return { id, title: decode(meta('title')) || '', image: meta('image') || null, lyrics: sunoLyrics(page) };
+}
+
+// Les paroles sont dans les données Next.js de la page : "prompt":"$47" renvoie
+// au bloc « 47:T<taille en octets>,<texte> » du flux self.__next_f.
+function sunoLyrics(page) {
+  try {
+    const flight = [...page.matchAll(/self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)/g)]
+      .map((m) => JSON.parse(`"${m[1]}"`))
+      .join('');
+    const ref = flight.match(/"prompt":"\$([0-9a-f]+)"/)?.[1];
+    if (ref) {
+      const at = flight.indexOf(`${ref}:T`);
+      const head = at >= 0 && flight.slice(at).match(/^([0-9a-f]+):T([0-9a-f]+),/);
+      if (head) {
+        const bytes = Buffer.from(flight.slice(at + head[0].length), 'utf8');
+        return bytes.subarray(0, parseInt(head[2], 16)).toString('utf8').trim().slice(0, 6000);
+      }
+    }
+    // Paroles courtes : directement dans le champ.
+    const inline = flight.match(/"prompt":"((?:[^"\\]|\\.)*)"/)?.[1];
+    return inline && !inline.startsWith('$') && inline !== 'Prompt' ? JSON.parse(`"${inline}"`).trim().slice(0, 6000) : '';
+  } catch {
+    return '';
+  }
 }
 
 export function isOurBlob(url) {

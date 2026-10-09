@@ -32,7 +32,7 @@ Pensé pour un ordinateur partagé où les gens votent à tour de rôle :
 
 Deux façons d'ajouter une chanson :
 
-- **Lien Suno** (recommandé) : on colle le lien de partage (`suno.com/s/…`) ou de la chanson (`suno.com/song/…`). La chanson doit être publique ; elle est lue dans le lecteur officiel de Suno (`suno.com/embed/<id>`), sans rien télécharger ni stocker. Titre et pochette sont repris de Suno. Pas d'enchaînement automatique pour ces chansons (« Écouter tous les hits »).
+- **Lien Suno** (recommandé) : on colle le lien de partage (`suno.com/s/…`) ou de la chanson (`suno.com/song/…`). La chanson doit être publique ; elle est lue dans le lecteur officiel de Suno (`suno.com/embed/<id>`), sans rien télécharger ni stocker. Titre, pochette et paroles (avec leurs tags) sont repris de Suno. Pas d'enchaînement automatique pour ces chansons (« Écouter tous les hits »).
 - **Fichier MP3 / vidéo** : envoyé sur Vercel Blob, lu avec le lecteur du site.
 
 

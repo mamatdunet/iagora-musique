@@ -574,6 +574,7 @@ function resetSuno() {
 }
 
 let lookupTimer;
+let autoLyrics = null;
 async function lookupSuno() {
   const value = sunoInput.value.trim();
   resetSuno();
@@ -588,6 +589,12 @@ async function lookupSuno() {
     sunoStatus.textContent = `✔ Chanson trouvée : « ${info.title || 'sans titre'} »`;
     sunoStatus.className = 'link-status ok';
     if (!form.elements.title.value && info.title) form.elements.title.value = info.title.slice(0, 80);
+    // Paroles récupérées depuis Suno, si le champ est encore vide.
+    // (on remplace aussi des paroles reprises d'un lien précédent, jamais un texte saisi à la main)
+    if (info.lyrics && (!lyricsInput.value.trim() || lyricsInput.value === autoLyrics)) {
+      lyricsInput.value = autoLyrics = info.lyrics;
+      sunoStatus.textContent += ' · paroles récupérées 📝';
+    }
     sunoPreview.append(sunoEmbed(info.id, info.title));
     sunoPreview.hidden = false;
   } catch (error) {
