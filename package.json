@@ -1,0 +1,17 @@
+{
+  "name": "iagora-musique",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.39.0",
+    "@vercel/blob": "^2.8.1"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  }
+}
