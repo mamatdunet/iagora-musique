@@ -76,11 +76,16 @@ function buildEntry(entry) {
   const by = document.createElement('p');
   by.className = 'by';
   by.textContent = entry.artist;
-  const media = document.createElement(entry.mediaType === 'video' ? 'video' : 'audio');
-  media.src = entry.mediaUrl;
-  media.controls = true;
-  media.preload = 'metadata';
-  if (entry.mediaType === 'video' && entry.coverUrl) media.poster = entry.coverUrl;
+  let media;
+  if (entry.mediaType === 'video') {
+    media = document.createElement('video');
+    media.src = entry.mediaUrl;
+    media.controls = true;
+    media.preload = 'metadata';
+    if (entry.coverUrl) media.poster = entry.coverUrl;
+  } else {
+    media = buildPlayer(entry.mediaUrl, entry.id, entry.title);
+  }
   info.append(h3, by, media);
   if (entry.lyrics) info.append(buildLyrics(entry.lyrics));
 
@@ -110,6 +115,91 @@ function buildEntry(entry) {
   body.append(cover, info, vote);
   li.append(medal, body, rank);
   return li;
+}
+
+/* ---------- Lecteur audio façon SoundCloud : grosse barre facile à parcourir ---------- */
+
+const BARS = 64;
+const fmt = (s) => (Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00');
+
+// Forme d'onde décorative, toujours la même pour une chanson donnée.
+function waveHeights(seed) {
+  let h = 0;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return Array.from({ length: BARS }, (_, i) => {
+    h = (h * 1103515245 + 12345) >>> 0;
+    const envelope = 0.55 + 0.45 * Math.sin((i / BARS) * Math.PI);
+    return Math.round((25 + (h % 75)) * envelope);
+  });
+}
+
+function buildPlayer(src, seed, title) {
+  const player = document.createElement('div');
+  player.className = 'player';
+  const audio = document.createElement('audio');
+  audio.src = src;
+  audio.preload = 'metadata';
+
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'play';
+  play.setAttribute('aria-label', `Écouter ${title}`);
+  play.textContent = '▶';
+
+  const track = document.createElement('div');
+  track.className = 'track';
+  const wave = document.createElement('div');
+  wave.className = 'wave';
+  const bars = waveHeights(seed).map((height) => {
+    const bar = document.createElement('span');
+    bar.style.height = `${height}%`;
+    wave.append(bar);
+    return bar;
+  });
+  const seek = document.createElement('input');
+  seek.type = 'range';
+  seek.className = 'seek';
+  seek.min = 0;
+  seek.max = 1000;
+  seek.value = 0;
+  seek.setAttribute('aria-label', `Position dans ${title}`);
+  const times = document.createElement('div');
+  times.className = 'times';
+  times.innerHTML = '<span>0:00</span><span>0:00</span>';
+  track.append(wave, seek, times);
+  player.append(play, track, audio);
+
+  let dragging = false;
+  const duration = () => (Number.isFinite(audio.duration) ? audio.duration : 0);
+  const paint = (ratio) => {
+    const done = Math.round(ratio * BARS);
+    bars.forEach((bar, i) => bar.classList.toggle('done', i < done));
+  };
+  const update = () => {
+    const ratio = duration() ? audio.currentTime / duration() : 0;
+    if (!dragging) seek.value = Math.round(ratio * 1000);
+    paint(dragging ? seek.value / 1000 : ratio);
+    times.children[0].textContent = fmt(audio.currentTime);
+    times.children[1].textContent = fmt(duration());
+  };
+
+  play.addEventListener('click', () => (audio.paused ? audio.play() : audio.pause()));
+  audio.addEventListener('play', () => { play.textContent = '❚❚'; player.classList.add('playing'); });
+  audio.addEventListener('pause', () => { play.textContent = '▶'; player.classList.remove('playing'); });
+  audio.addEventListener('timeupdate', update);
+  audio.addEventListener('loadedmetadata', update);
+  audio.addEventListener('durationchange', update);
+  seek.addEventListener('input', () => {
+    dragging = true;
+    paint(seek.value / 1000);
+    if (duration()) times.children[0].textContent = fmt((seek.value / 1000) * duration());
+  });
+  seek.addEventListener('change', () => {
+    dragging = false;
+    if (duration()) audio.currentTime = (seek.value / 1000) * duration();
+    update();
+  });
+  return player;
 }
 
 /* ---------- Paroles, avec tags affichables ou masqués ---------- */
@@ -182,6 +272,7 @@ function render(entries) {
       nodes.delete(id);
     }
   }
+  podium.dataset.count = String(Math.min(entries.length, 3));
   empty.hidden = entries.length > 0;
   list.hidden = entries.length === 0;
   updateCooldown();

@@ -141,7 +141,36 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
   text-transform: uppercase; color: var(--ink-900); overflow-wrap: anywhere;
 }
 .info .by { margin: 2px 0 8px; font-size: 15px; color: var(--ink-500); }
-.info audio { width: 100%; height: 40px; }
+/* Lecteur */
+.player { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px; text-align: left; }
+.player audio { display: none; }
+.play {
+  display: grid; place-items: center; width: 56px; height: 56px; border: 0; border-radius: 50%; cursor: pointer;
+  background: var(--pink-600); color: var(--ink-900); font-size: 20px; letter-spacing: -2px;
+  box-shadow: 0 6px 14px rgba(214, 46, 150, .35); transition: transform 120ms var(--ease-out);
+}
+.play:hover { transform: scale(1.06); }
+.play:active { transform: scale(.94); }
+.play:focus-visible { outline: 3px solid var(--blue-600); outline-offset: 3px; }
+.track { position: relative; }
+.wave { display: flex; align-items: center; gap: 2px; height: 52px; overflow: hidden; }
+.wave span { flex: 1 1 0; min-width: 1px; border-radius: 2px; background: #c9cde6; transition: background-color 120ms; }
+.wave span.done { background: var(--pink-600); }
+.player.playing .wave span.done { background: var(--pink-700); }
+.seek {
+  position: absolute; inset: 0 0 auto 0; width: 100%; height: 52px; margin: 0; cursor: pointer;
+  appearance: none; -webkit-appearance: none; background: transparent; touch-action: none;
+}
+.seek::-webkit-slider-runnable-track { height: 52px; background: transparent; }
+.seek::-moz-range-track { height: 52px; background: transparent; }
+.seek::-webkit-slider-thumb { -webkit-appearance: none; width: 4px; height: 52px; border-radius: 2px; background: var(--ink-900); }
+.seek::-moz-range-thumb { width: 4px; height: 52px; border: 0; border-radius: 2px; background: var(--ink-900); }
+.seek:focus-visible { outline: 3px solid var(--blue-600); outline-offset: 2px; border-radius: 6px; }
+.times { display: flex; justify-content: space-between; margin-top: 4px; font-size: 13px; font-weight: 600; color: var(--ink-500); font-variant-numeric: tabular-nums; }
+.podium .entry[data-place="1"] .play { width: 64px; height: 64px; font-size: 22px; }
+.podium .entry[data-place="1"] .wave, .podium .entry[data-place="1"] .seek,
+.podium .entry[data-place="1"] .seek::-webkit-slider-runnable-track { height: 64px; }
+.podium .entry[data-place="1"] .seek::-webkit-slider-thumb { height: 64px; }
 .info video { width: 100%; max-height: 260px; border-radius: 12px; background: var(--ink-900); }
 .vote { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .vote .count { font-family: var(--font-display); font-size: 30px; line-height: 1; color: var(--blue-600); text-align: center; }
@@ -152,7 +181,7 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 /* Podium */
 .podium {
   list-style: none; margin: 20px 0 0; padding: 72px 20px 0; display: grid;
-  grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; align-items: end;
   border-radius: 28px 28px 0 0;
   background:
     radial-gradient(circle at 12% 30%, rgba(255, 80, 190, .18) 0 6px, transparent 7px),
@@ -164,6 +193,10 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 }
 .podium:empty { display: none; }
 .podium .entry { position: relative; display: flex; flex-direction: column; min-width: 0; }
+/* Moins de 3 chansons : le podium se resserre pour leur laisser de la place */
+.podium[data-count="1"] { grid-template-columns: minmax(0, 720px); justify-content: center; }
+.podium[data-count="2"] { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); }
+.podium[data-count="1"] .entry[data-place="1"] { grid-column: 1; }
 .podium .entry[data-place="1"] { grid-column: 2; grid-row: 1; }
 .podium .entry[data-place="2"] { grid-column: 1; grid-row: 1; }
 .podium .entry[data-place="3"] { grid-column: 3; grid-row: 1; }
@@ -190,11 +223,12 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 .podium .entry[data-place="1"] .medal::before {
   content: "👑"; position: absolute; top: -34px; font-size: 32px; animation: bounce 2s ease-in-out infinite;
 }
-.podium .cover { width: 120px; height: 120px; font-size: 52px; box-shadow: 0 8px 20px rgba(20, 20, 26, .15); }
-.podium .entry[data-place="1"] .cover { width: 160px; height: 160px; font-size: 68px; }
+.podium .cover { width: 180px; height: 180px; font-size: 72px; box-shadow: 0 8px 20px rgba(20, 20, 26, .15); }
+.podium .entry[data-place="1"] .cover { width: 260px; height: 260px; font-size: 104px; }
 .podium .info { width: 100%; }
-.podium .info h3 { font-size: 26px; }
-.podium .entry[data-place="1"] .info h3 { font-size: 32px; }
+.podium .info h3 { font-size: 30px; }
+.podium .entry[data-place="1"] .info h3 { font-size: clamp(34px, 3.4vw, 48px); }
+.podium .entry[data-place="1"] .body { padding: 44px 28px 24px; }
 .podium .vote { flex-direction: row; justify-content: center; gap: 14px; }
 .podium .vote .cta { font-size: 18px; padding: 12px 20px; }
 
@@ -228,7 +262,7 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 @media (max-width: 960px) {
   .upload { grid-template-columns: 1fr; }
   .dropzone { min-height: 200px; }
-  .podium { grid-template-columns: 1fr; gap: 48px; padding: 48px 14px 0; }
+  .podium, .podium[data-count] { grid-template-columns: 1fr; gap: 48px; padding: 48px 14px 0; }
   .podium .entry[data-place] { grid-column: 1; grid-row: auto; }
   .podium .entry[data-place="1"] { order: 1; }
   .podium .entry[data-place="2"] { order: 2; }
@@ -241,7 +275,10 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
   .entries .cover { width: 56px; height: 56px; }
   .entries .info { grid-column: 1 / -1; grid-row: 2; }
   .entries .vote { grid-column: 3; grid-row: 1; flex-direction: row; justify-content: flex-end; }
-  .podium .cover, .podium .entry[data-place="1"] .cover { width: 120px; height: 120px; }
+  .podium .cover, .podium .entry[data-place="1"] .cover { width: 160px; height: 160px; }
+  .podium .entry[data-place="1"] .body { padding: 40px 16px 20px; }
+  .play, .podium .entry[data-place="1"] .play { width: 60px; height: 60px; }
+  .wave, .seek, .seek::-webkit-slider-runnable-track, .seek::-webkit-slider-thumb { height: 60px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .trophy, .dz-icon, .podium .medal::before { animation: none; }

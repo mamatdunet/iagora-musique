@@ -29,6 +29,56 @@ button.addEventListener('click', async () => {
   }, 3000);
 });
 
+// Colonne Top 50 : les 5 chansons les plus votées, mises à jour toutes les 30 s.
+const miniTop = document.querySelector('#mini-top');
+
+async function loadMiniTop() {
+  try {
+    const { entries } = await fetch('/api/entries', { cache: 'no-store' }).then((r) => r.json());
+    miniTop.replaceChildren(...entries.slice(0, 5).map((entry, i) => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = '/top50#classement';
+      const rank = document.createElement('b');
+      rank.textContent = ['🥇', '🥈', '🥉'][i] || String(i + 1);
+      let cover;
+      if (entry.coverUrl) {
+        cover = document.createElement('img');
+        cover.src = entry.coverUrl;
+        cover.alt = '';
+      } else {
+        cover = document.createElement('span');
+        cover.textContent = '🍁';
+      }
+      cover.className = 'mini-cover';
+      const text = document.createElement('span');
+      text.className = 'mini-text';
+      const title = document.createElement('strong');
+      title.textContent = entry.title;
+      const artist = document.createElement('small');
+      artist.textContent = entry.artist;
+      text.append(title, artist);
+      const votes = document.createElement('span');
+      votes.className = 'mini-votes';
+      votes.textContent = `${entry.votes} ♥`;
+      votes.title = `${entry.votes} vote${entry.votes > 1 ? 's' : ''}`;
+      link.append(rank, cover, text, votes);
+      li.append(link);
+      return li;
+    }));
+    if (!entries.length) {
+      const li = document.createElement('li');
+      li.className = 'mini-empty';
+      li.textContent = 'Pas encore de chanson… sois la première ou le premier !';
+      miniTop.append(li);
+    }
+  } catch {
+    // Classement indisponible : la colonne reste utilisable sans lui.
+  }
+}
+loadMiniTop();
+setInterval(loadMiniTop, 30000);
+
 // Boîte à inspi : idées de chansons, avec un tirage au sort sujet + style.
 const dialog = document.querySelector('#inspi');
 const ideas = [...dialog.querySelectorAll('.inspi-list li')];

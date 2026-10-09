@@ -102,8 +102,8 @@ async function getReadToken(request) {
 }
 
 export async function playableUrl(url, request) {
-  if (!url || !new URL(url).hostname.includes('.private.')) return url;
   try {
+    if (!url || !new URL(url).hostname.includes('.private.')) return url;
     const pathname = decodeURIComponent(new URL(url).pathname.slice(1));
     const { presignedUrl } = await presignUrl(await getReadToken(request), { operation: 'get', pathname, access: 'private' });
     return presignedUrl;
