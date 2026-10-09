@@ -67,6 +67,47 @@ h1 {
 .nowrap { white-space: nowrap; }
 .leaf { display: inline-block; transform-origin: 50% 0; animation: sway 4s ease-in-out infinite; }
 @keyframes sway { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(10deg); } }
+/* Titre + boîte à inspi */
+.title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+.inspi-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; cursor: pointer;
+  border: 2px solid var(--ink-900); border-radius: var(--radius-pill); background: #ffe27a; color: var(--ink-900);
+  font-family: var(--font-display); font-size: 20px; letter-spacing: .04em; text-transform: uppercase;
+  box-shadow: 4px 4px 0 var(--ink-900); transform: rotate(-3deg);
+  transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+}
+.inspi-btn:hover { transform: rotate(0) translateY(-2px); box-shadow: 6px 6px 0 var(--ink-900); }
+.inspi-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink-900); }
+.inspi-btn:focus-visible { outline: 3px solid var(--blue-600); outline-offset: 3px; }
+
+.inspi {
+  width: min(720px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 28px 30px;
+  border: 2px solid var(--ink-900); border-radius: 24px; background: var(--white); color: var(--ink-800);
+  box-shadow: var(--shadow-lg);
+}
+.inspi::backdrop { background: rgba(20, 20, 26, .55); }
+.inspi h2 {
+  margin: 0 0 6px; font-family: var(--font-display); font-weight: 400; font-size: clamp(34px, 5vw, 48px);
+  line-height: 1; text-transform: uppercase; color: var(--blue-600);
+}
+.inspi > p:not(.eyebrow) { margin: 0 0 16px; }
+.inspi-close {
+  position: absolute; top: 14px; right: 16px; width: 40px; height: 40px; border: 2px solid var(--ink-900);
+  border-radius: 50%; background: var(--white); font-size: 24px; line-height: 1; cursor: pointer;
+}
+.inspi-close:hover { background: var(--pink-50); }
+.inspi-draw {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px;
+  margin-bottom: 18px; padding: 16px 18px; border-radius: 16px; background: var(--leaf-50); border: 2px dashed var(--leaf-600);
+}
+.inspi-draw p { margin: 0; flex: 1 1 260px; font-weight: 600; color: var(--ink-900); }
+.inspi-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.inspi-list li { display: flex; gap: 10px; padding: 12px 14px; border: 2px solid var(--ink-200); border-radius: 14px; font-size: 14px; line-height: 1.4; }
+.inspi-list li.picked { border-color: var(--pink-600); background: var(--pink-50); }
+.inspi-list b { font-size: 26px; line-height: 1; }
+.inspi-list strong { display: block; font-size: 15px; color: var(--ink-900); }
+@media (max-width: 640px) { .inspi-list { grid-template-columns: 1fr; } .inspi { padding: 22px 18px; } }
+
 .lead { max-width: 1000px; margin: 14px 0 0; font-size: clamp(16px, 1.6vw, 19px); line-height: 1.55; }
 .lead strong { font-weight: 700; color: var(--ink-900); }
 
@@ -76,8 +117,7 @@ h1 {
 }
 
 /* Cartes */
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .card {
   position: relative; display: flex; flex-direction: column;
   padding: 24px 26px 22px; border: 2px solid var(--ink-900); border-radius: var(--radius-lg);
@@ -135,6 +175,12 @@ a.url { font-weight: 600; color: var(--blue-600); }
 details { margin: 0 0 14px; font-size: 15px; }
 summary { cursor: pointer; font-weight: 600; color: var(--blue-600); }
 details p { margin: 8px 0 0 !important; font-size: 15px !important; }
+.ways { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+.ways li { display: flex; gap: 8px; }
+.ways b {
+  flex: none; display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%;
+  background: var(--pink-600); color: var(--ink-900); font-size: 12px;
+}
 
 /* Colonne Top 50, à droite sur toute la hauteur de l'écran */
 .page { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 100vh; min-height: 100dvh; }
@@ -149,6 +195,7 @@ details p { margin: 8px 0 0 !important; font-size: 15px !important; }
   .with-aside .stage-cta h2 { font-size: clamp(64px, 7vw, 104px); }
   .with-aside .stage-cta ul { gap: 14px; margin-top: 20px; }
   .with-aside .nav-pill { display: none; }
+  .with-aside h1 { font-size: clamp(38px, 6.2vw, 96px); }
   .with-aside .cta-big { padding: 16px 18px; font-size: clamp(17px, 1.6vw, 22px); }
   .with-aside .cta-ghost { padding: 12px 14px; font-size: clamp(14px, 1.2vw, 17px); white-space: nowrap; }
   .with-aside .stage-cta::after { font-size: 260px; right: -60px; bottom: -60px; }

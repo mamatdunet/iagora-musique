@@ -24,7 +24,10 @@
   <main>
     <div class="wrap">
       <p class="eyebrow">Atelier IAgora</p>
-      <h1>Tube de <span class="nowrap">l'automne <span class="leaf" aria-hidden="true">🍁</span></span></h1>
+      <div class="title-row">
+        <h1>Tube de <span class="nowrap">l'automne <span class="leaf" aria-hidden="true">🍁</span></span></h1>
+        <button class="inspi-btn" type="button" id="open-inspi" aria-haspopup="dialog">💡 Boîte à inspi</button>
+      </div>
       <p class="lead">Compose une chanson avec l'IA, de A à Z, uniquement avec <strong>Suno</strong>. Commence au niveau 1, monte en difficulté à ton rythme, puis <strong>dépose ton tube dans le Top&nbsp;50</strong> et <strong>vote pour la meilleure chanson</strong>&nbsp;!</p>
 
       <h2 class="choose">Choisis ton niveau ➭</h2>
@@ -32,40 +35,48 @@
       <div class="grid">
         <article class="card">
           <div class="num">Niveau <span class="difficulty" aria-label="Facile">●○○</span> <b>1</b></div>
-          <h2>Clé en main</h2>
-          <p>Un prompt, un style, et Suno fait le reste.</p>
+          <h2>Partisan du moindre effort</h2>
+          <p>Une phrase pour décrire ta chanson, et Suno fait tout le reste.</p>
           <ol>
-            <li>Menu <kbd>Create</kbd></li>
-            <li><kbd>Lyrics</kbd> › clic sur <kbd>🪄</kbd> › <kbd>Write Full Song</kbd> et décris ta chanson</li>
-            <li>Ajoute un style de musique</li>
+            <li>Menu <kbd>Create</kbd>, onglet <kbd>Simple</kbd></li>
+            <li>Décris ta chanson en une phrase&nbsp;: le sujet et le style <em>(«&nbsp;Une valse joyeuse sur les châtaignes grillées&nbsp;»)</em></li>
             <li>Clic sur <kbd>Create</kbd></li>
           </ol>
+          <details>
+            <summary>Un peu plus de contrôle&nbsp;? Onglet Advanced</summary>
+            <p>Dans <kbd>Lyrics</kbd>, clic sur <kbd>✨</kbd> pour faire écrire les paroles. Dans <kbd>Styles</kbd>, choisis des styles proposés ou clic sur <kbd>🪄</kbd>. Puis <kbd>Create</kbd>.</p>
+          </details>
           <a class="cta" href="https://suno.com/create" target="_blank" rel="noopener">Ouvrir Suno ➭</a>
           <span class="url">suno.com/create</span>
         </article>
 
         <article class="card">
           <div class="num">Niveau <span class="difficulty" aria-label="Moyen">●●○</span> <b>2</b></div>
-          <h2>Parolier IA</h2>
-          <p>Fais écrire les paroles par l'IA de ton choix, avec les méta-tags Suno pour piloter le son.</p>
+          <h2>Les TAGS pour faire mieux</h2>
+          <p>Les méta-tags entre crochets disent à Suno comment chaque partie doit sonner.</p>
           <ol>
-            <li>Ouvre ton IA&nbsp;: <a class="chip" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> <a class="chip" href="https://chat.mistral.ai/" target="_blank" rel="noopener">Le Chat Mistral</a> <a class="chip" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></li>
-            <li>Demande-lui d'écrire les paroles de ta chanson</li>
-            <li>À la fin de ton prompt, <strong>colle le guide des méta-tags Suno</strong> (bouton ci-dessous)</li>
-            <li>Copie-colle les paroles obtenues dans Suno et regénère ton son</li>
+            <li>Deux voies, qui peuvent se mélanger&nbsp;:
+              <ul class="ways">
+                <li><b>A</b><span>Écris les paroles de ta chanson et aide-toi des tags ci-dessous pour la personnaliser.</span></li>
+                <li><b>B</b><span>Demande à un outil IA de ton choix (<a class="chip" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a> <a class="chip" href="https://chat.mistral.ai/" target="_blank" rel="noopener">Le Chat Mistral</a> <a class="chip" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a>…) d'écrire tout ou partie des paroles, et copie-colle le guide des tags ci-dessous à la fin de ton prompt.</span></li>
+              </ul>
+            </li>
+            <li>Dans Suno&nbsp;: <kbd>Create</kbd> › <kbd>Advanced</kbd>, colle les paroles dans <kbd>Lyrics</kbd> et le style dans <kbd>Styles</kbd></li>
+            <li>Clic sur <kbd>Create</kbd></li>
           </ol>
           <button class="cta" type="button" id="copy-tags">📋 Copier le guide des tags</button>
-          <a class="url" href="https://docs.google.com/document/d/1Qg5pH6hIV9hvwBcZRQhxaljTp8j9GCxkRn1xULzIJsQ/edit?usp=sharing" target="_blank" rel="noopener">Voir le guide des méta-tags en détail ↗</a>
+          <a class="url" href="https://docs.google.com/document/d/1Qg5pH6hIV9hvwBcZRQhxaljTp8j9GCxkRn1xULzIJsQ/edit?tab=t.0#heading=h.a1qvl46q4f2x" target="_blank" rel="noopener">Voir le guide des méta-tags en détail ↗</a>
         </article>
 
         <article class="card">
           <div class="num">Niveau <span class="difficulty" aria-label="Expert">●●●</span> <b>3</b></div>
           <h2>Sur mesure</h2>
-          <p>Toujours dans ton IA, à la suite du niveau&nbsp;2, fais un prompt plus précis.</p>
+          <p>Reprends ta chanson dans Suno et retravaille-la jusqu'à ce qu'elle te ressemble.</p>
           <ol>
-            <li>Ajoute des private jokes, des anecdotes, de quoi faire une chanson à ton image</li>
-            <li>Demande-lui de t'aider à définir le style musical</li>
-            <li>Colle paroles et style dans Suno, et c'est parti</li>
+            <li>Glisse dans les paroles des private jokes, des anecdotes, des prénoms…</li>
+            <li>Affine le style dans <kbd>Styles</kbd>&nbsp;: époque, instruments, type de voix, tempo</li>
+            <li>Ajoute des tags au début de chaque section pour sculpter le son</li>
+            <li>Regénère, compare les versions, garde la meilleure</li>
           </ol>
           <a class="cta" href="https://suno.com/create" target="_blank" rel="noopener">Ouvrir Suno ➭</a>
           <span class="url">suno.com/create</span>
@@ -74,7 +85,7 @@
 
       <h2 class="choose">Pour aller plus loin ➭</h2>
 
-      <div class="grid grid-2">
+      <div class="grid">
         <article class="card extra">
           <div class="num">Étape <b>A</b></div>
           <h2>La pochette du single</h2>
@@ -89,13 +100,22 @@
 
         <article class="card extra">
           <div class="num">Étape <b>B</b></div>
-          <h2>Le clip à paroles</h2>
+          <h2>N'oubliez pas les paroles&nbsp;! 🎤</h2>
           <p>Exporte la vidéo de ta chanson avec les paroles qui défilent.</p>
           <ol>
             <li>Menu <kbd>Library</kbd></li>
             <li>Sur les <kbd>…</kbd> de ta chanson (ou clic droit)</li>
             <li><kbd>Download</kbd> › <kbd>Video</kbd></li>
           </ol>
+        </article>
+
+        <article class="card extra">
+          <div class="num">Étape <b>C</b></div>
+          <h2>Atelier instru</h2>
+          <p>Compose une instru originale en choisissant style, ambiance, instruments et tempo. L'IA tourne directement dans ton navigateur, rien n'est envoyé en ligne.</p>
+          <p class="muted">À tester sur un ordinateur récent pour des résultats rapides.</p>
+          <a class="cta" href="https://instru-iagora.vercel.app/" target="_blank" rel="noopener">Créer mon instru ➭</a>
+          <span class="url">instru-iagora.vercel.app</span>
         </article>
       </div>
     </div>
@@ -129,6 +149,30 @@
       <a class="cta cta-ghost" href="/top50#classement">Voter pour la meilleure ➭</a>
     </div>
   </aside>
+
+  <dialog class="inspi" id="inspi" aria-labelledby="inspi-title">
+    <button class="inspi-close" type="button" data-close aria-label="Fermer">×</button>
+    <p class="eyebrow">Panne d'idée&nbsp;?</p>
+    <h2 id="inspi-title">Boîte à inspi 💡</h2>
+    <p>Pioche un sujet, ajoute un style qui n'a rien à voir… et c'est parti&nbsp;!</p>
+    <div class="inspi-draw" aria-live="polite">
+      <p id="inspi-result">Clique sur le dé pour tirer une idée au hasard.</p>
+      <button class="cta" type="button" id="inspi-roll">🎲 Une idée au hasard</button>
+    </div>
+    <ul class="inspi-list">
+      <li><b>🦊</b><span><strong>Une fable de La Fontaine en musique</strong> Le Corbeau et le Renard en rap, La Cigale et la Fourmi en disco…</span></li>
+      <li><b>📰</b><span><strong>Le récit d'une actualité</strong> Un fait divers insolite, la météo du jour, un exploit sportif.</span></li>
+      <li><b>💌</b><span><strong>Une chanson pour un·e ami·e, un·e proche</strong> Anniversaire, départ, remerciement, déclaration…</span></li>
+      <li><b>🍂</b><span><strong>Hymne à l'automne</strong> Les feuilles mortes, les châtaignes, la soupe de potiron, le retour du plaid.</span></li>
+      <li><b>☕</b><span><strong>Ode à un objet du quotidien</strong> La machine à café, la photocopieuse, ta vieille paire de baskets.</span></li>
+      <li><b>👵</b><span><strong>La recette de famille</strong> Le gâteau de mamie, chanté comme un tube de l'été.</span></li>
+      <li><b>📺</b><span><strong>Le générique d'une série imaginaire</strong> Une série policière dans ton quartier, un dessin animé des années 90.</span></li>
+      <li><b>🥕</b><span><strong>Une battle improbable</strong> Les légumes contre les fruits, le lundi contre le vendredi.</span></li>
+      <li><b>🏖</b><span><strong>Un souvenir de vacances</strong> Le camping sous la pluie, la valise perdue, le coucher de soleil.</span></li>
+      <li><b>🌙</b><span><strong>Une berceuse</strong> Pour un enfant, un chat… ou un collègue fatigué.</span></li>
+    </ul>
+  </dialog>
+
   <script type="module" src="/src/index.js"></script>
 </body>
 </html>
