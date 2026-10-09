@@ -62,6 +62,16 @@ export async function underLimit(key, max, windowSeconds) {
   return count <= max;
 }
 
+// Jeton Vercel Blob : la variable standard, ou celle créée avec un préfixe
+// quand le store est connecté au projet sous un autre nom.
+export function blobToken() {
+  if (process.env.BLOB_READ_WRITE_TOKEN) return process.env.BLOB_READ_WRITE_TOKEN;
+  const found = Object.entries(process.env).find(
+    ([key, value]) => key.endsWith('READ_WRITE_TOKEN') && String(value).startsWith('vercel_blob_rw_'),
+  );
+  return found ? found[1] : undefined;
+}
+
 export function isOurBlob(url) {
   try {
     const u = new URL(url);

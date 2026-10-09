@@ -1,7 +1,7 @@
 import { del } from '@vercel/blob';
 import { randomUUID } from 'node:crypto';
 import {
-  redis, KEYS, json, clientIp, readVoter, newVoter, underLimit, isOurBlob,
+  redis, KEYS, json, blobToken, clientIp, readVoter, newVoter, underLimit, isOurBlob,
   VOTE_COOLDOWN, UPLOADS_PER_IP_PER_HOUR,
 } from './_lib/store.js';
 
@@ -45,6 +45,7 @@ export async function POST(request) {
     mediaUrl: String(body.mediaUrl || ''),
     mediaType: String(body.mediaType || '').startsWith('video/') ? 'video' : 'audio',
     coverUrl: body.coverUrl ? String(body.coverUrl) : null,
+    lyrics: String(body.lyrics ?? '').replace(/\r\n?/g, '\n').trim().slice(0, 6000),
     createdAt: Date.now(),
   };
   if (!entry.title || !entry.artist) return json({ error: 'Titre et nom d’artiste obligatoires.' }, 400);
@@ -68,7 +69,7 @@ export async function DELETE(request) {
   await Promise.all([
     redis.hdel(KEYS.entries, id),
     redis.zrem(KEYS.votes, id),
-    del([entry.mediaUrl, entry.coverUrl].filter(Boolean)).catch(() => {}),
+    del([entry.mediaUrl, entry.coverUrl].filter(Boolean), { token: blobToken() }).catch(() => {}),
   ]);
   return json({ ok: true });
 }

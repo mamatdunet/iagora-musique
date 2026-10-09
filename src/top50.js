@@ -82,6 +82,7 @@ function buildEntry(entry) {
   media.preload = 'metadata';
   if (entry.mediaType === 'video' && entry.coverUrl) media.poster = entry.coverUrl;
   info.append(h3, by, media);
+  if (entry.lyrics) info.append(buildLyrics(entry.lyrics));
 
   const vote = document.createElement('div');
   vote.className = 'vote';
@@ -109,6 +110,51 @@ function buildEntry(entry) {
   body.append(cover, info, vote);
   li.append(medal, body, rank);
   return li;
+}
+
+/* ---------- Paroles, avec tags affichables ou masqués ---------- */
+
+const TAG = /\[[^\]\n]*\]/g;
+
+function buildLyrics(text) {
+  const box = document.createElement('details');
+  box.className = 'lyrics hide-tags';
+  const summary = document.createElement('summary');
+  summary.textContent = '📝 Les paroles';
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'tags-toggle';
+  toggle.textContent = 'Afficher les tags [ ]';
+  toggle.addEventListener('click', () => {
+    const hidden = box.classList.toggle('hide-tags');
+    toggle.textContent = hidden ? 'Afficher les tags [ ]' : 'Masquer les tags [ ]';
+  });
+  const body = document.createElement('div');
+  body.className = 'lyrics-text';
+  let seenText = false;
+  for (const line of text.split('\n')) {
+    const row = document.createElement('div');
+    row.className = 'lyric-line';
+    let last = 0;
+    for (const match of line.matchAll(TAG)) {
+      row.append(line.slice(last, match.index));
+      const tag = document.createElement('span');
+      tag.className = 'lyric-tag';
+      tag.textContent = match[0];
+      row.append(tag);
+      last = match.index + match[0].length;
+    }
+    row.append(line.slice(last));
+    // Ligne qui ne contient que des tags : elle disparaît quand les tags sont masqués.
+    const hasText = Boolean(line.replace(TAG, '').trim());
+    if (!hasText) row.classList.add(line.trim() ? 'tag-only' : 'blank');
+    // Lignes vides du début (avant les premières paroles) : masquées avec les tags.
+    if (!hasText && !seenText) row.classList.add('lead');
+    seenText ||= hasText;
+    body.append(row);
+  }
+  box.append(summary, toggle, body);
+  return box;
 }
 
 function render(entries) {
@@ -233,7 +279,23 @@ function showFiles() {
   coverPreview.src = cover ? URL.createObjectURL(cover) : '';
 }
 
+const isImage = (file) => file.type.startsWith('image/');
+const isMedia = (file) => /^(audio|video)\//.test(file.type);
+
+// Refuse les fichiers du mauvais type (seules les images vont dans la pochette).
+function accepts(input, file) {
+  const ok = input === coverInput ? isImage(file) : isMedia(file);
+  if (!ok) {
+    setStatus(uploadStatus, input === coverInput
+      ? `« ${file.name} » n’est pas une image : la pochette doit être un fichier JPG, PNG, WebP ou GIF.`
+      : `« ${file.name} » n’est pas un fichier audio ou vidéo.`, 'error');
+  }
+  return ok;
+}
+
 function putFile(input, file) {
+  if (!accepts(input, file)) return;
+  setStatus(uploadStatus, '');
   const transfer = new DataTransfer();
   transfer.items.add(file);
   input.files = transfer.files;
@@ -257,13 +319,39 @@ window.addEventListener('dragover', (e) => e.preventDefault());
 window.addEventListener('drop', (e) => {
   e.preventDefault();
   for (const file of e.dataTransfer.files) {
-    if (file.type.startsWith('image/')) putFile(coverInput, file);
-    else if (/^(audio|video)\//.test(file.type)) putFile(mediaInput, file);
+    if (isImage(file)) putFile(coverInput, file);
+    else if (isMedia(file)) putFile(mediaInput, file);
+    else accepts(mediaInput, file);
   }
   $('#deposer').scrollIntoView({ behavior: 'smooth' });
 });
-mediaInput.addEventListener('change', showFiles);
-coverInput.addEventListener('change', showFiles);
+for (const input of [mediaInput, coverInput]) {
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (file && !accepts(input, file)) input.value = '';
+    else setStatus(uploadStatus, '');
+    showFiles();
+  });
+}
+
+// Aperçu des paroles sans les tags, pour vérifier ce que verront les autres.
+const lyricsInput = form.elements.lyrics;
+const lyricsPreview = $('#lyrics-preview');
+$('#lyrics-toggle').addEventListener('click', (event) => {
+  const show = lyricsPreview.hidden;
+  lyricsPreview.hidden = !show;
+  lyricsInput.hidden = show;
+  event.currentTarget.textContent = show ? 'Revenir au texte complet' : 'Aperçu sans les tags';
+  if (show) {
+    lyricsPreview.textContent = lyricsInput.value
+      .split('\n')
+      .filter((line) => !line.trim() || line.replace(TAG, '').trim())
+      .map((line) => line.replace(TAG, '').trim())
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim() || 'Rien à afficher pour l’instant.';
+  }
+});
 
 function safeName(file) {
   const ext = (file.name.match(/\.[a-z0-9]{1,5}$/i) || [''])[0].toLowerCase();
@@ -273,7 +361,7 @@ function safeName(file) {
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const button = form.querySelector('button');
+  const button = form.querySelector('button[type="submit"]');
   const data = new FormData(form);
   const media = data.get('media');
   const cover = data.get('cover');
@@ -318,18 +406,28 @@ form.addEventListener('submit', async (event) => {
         mediaUrl: mediaBlob.url,
         mediaType: media.type,
         coverUrl,
+        lyrics: data.get('lyrics'),
       }),
     });
     const result = await res.json();
     if (!res.ok) throw new Error(result.error);
 
     form.reset();
+    lyricsInput.hidden = false;
+    lyricsPreview.hidden = true;
+    $('#lyrics-toggle').textContent = 'Aperçu sans les tags';
     showFiles();
     setStatus(uploadStatus, 'Ta chanson est dans le Top 50 ! 🎉 Maintenant, vote pour ta préférée.', 'ok');
     await refresh();
     nodes.get(result.entry.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   } catch (error) {
-    setStatus(uploadStatus, `Oups : ${error.message || 'envoi impossible'}`, 'error');
+    let message = error.message || 'envoi impossible';
+    // Le jeton d'envoi est refusé : le plus souvent, le stockage Vercel Blob n'est pas branché.
+    if (/client token/i.test(message)) {
+      const check = await fetch('/api/upload').then((r) => r.json()).catch(() => ({}));
+      if (check.blob === false) message = 'le stockage des fichiers (Vercel Blob) n’est pas encore branché au site. Préviens l’équipe d’animation.';
+    }
+    setStatus(uploadStatus, `Oups : ${message}`, 'error');
   } finally {
     button.disabled = false;
     progress.hidden = true;
