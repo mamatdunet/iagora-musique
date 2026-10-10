@@ -246,6 +246,7 @@ details p { margin: 8px 0 0 !important; font-size: 15px !important; }
   margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(44px, 6vw, 72px);
   line-height: .95; text-transform: uppercase;
 }
+.aside-trophy { display: inline-block; font-size: .6em; vertical-align: .12em; }
 .stage-cta h2 small {
   display: block; margin-bottom: 4px; font-size: .38em; line-height: 1; letter-spacing: .03em; color: rgba(255, 255, 255, .85);
 }
