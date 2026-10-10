@@ -546,6 +546,33 @@ async function sendFile(folder, file, onProgress) {
   return upload(`${folder}/${safeName(file)}`, file, { ...options, multipart: file.size > 20 * 1024 * 1024 });
 }
 
+/* ---------- Champs obligatoires : signalés en rouge ---------- */
+
+function markInvalid(input, message) {
+  input.classList.add('invalid');
+  input.setAttribute('aria-invalid', 'true');
+  let error = input.parentElement.querySelector('.field-error');
+  if (!error) {
+    error = document.createElement('span');
+    error.className = 'field-error';
+    error.id = `${input.name}-error`;
+    input.setAttribute('aria-describedby', error.id);
+    input.after(error);
+  }
+  error.textContent = message;
+}
+
+for (const name of ['title', 'artist']) {
+  form.elements[name].addEventListener('input', (event) => {
+    const input = event.target;
+    if (!input.value.trim()) return;
+    input.classList.remove('invalid');
+    input.removeAttribute('aria-invalid');
+    input.parentElement.querySelector('.field-error')?.remove();
+    if (!form.querySelector('.invalid')) setStatus(uploadStatus, '');
+  });
+}
+
 /* ---------- Lien Suno ou fichier MP3 ---------- */
 
 let source = 'link';
@@ -630,8 +657,15 @@ form.addEventListener('submit', async (event) => {
     mediaZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
-  if (!data.get('title').trim() || !data.get('artist').trim()) {
-    setStatus(uploadStatus, 'Indique le titre et le nom de l’artiste.', 'error');
+  const missing = ['title', 'artist'].filter((name) => !String(data.get(name) || '').trim());
+  if (missing.length) {
+    for (const name of missing) {
+      markInvalid(form.elements[name], name === 'title' ? 'Indique le titre de la chanson.' : 'Indique le nom de l’artiste ou de l’équipe.');
+    }
+    setStatus(uploadStatus, `⚠️ Il manque ${missing.length === 2 ? 'le titre et le nom de l’artiste' : missing[0] === 'title' ? 'le titre de la chanson' : 'le nom de l’artiste'} (en rouge ci-dessus).`, 'error');
+    const first = form.elements[missing[0]];
+    first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    first.focus({ preventScroll: true });
     return;
   }
 

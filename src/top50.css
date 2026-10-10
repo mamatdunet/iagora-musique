@@ -72,6 +72,18 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 .status { margin: 0; font-size: 15px; font-weight: 600; }
 .status:empty { display: none; }
 .status.error { color: #c0182f; }
+.upload .status.error {
+  padding: 12px 14px; border: 3px solid #c0182f; border-radius: 12px; background: #fdecee;
+  animation: shake 400ms ease-in-out;
+}
+.fields input.invalid {
+  border-color: #c0182f !important; background: #fdecee; box-shadow: 0 0 0 4px rgba(192, 24, 47, .18) !important;
+  animation: shake 400ms ease-in-out;
+}
+.field-error { font-size: 14px; font-weight: 700; color: #c0182f; }
+.field-error::before { content: "⚠️ "; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .fields input.invalid, .upload .status.error { animation: none; } }
 .status.ok { color: #157a3c; }
 
 /* Choix : lien Suno ou fichier */
