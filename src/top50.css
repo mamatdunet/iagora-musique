@@ -331,3 +331,61 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 @media (prefers-reduced-motion: reduce) {
   .trophy, .dz-icon, .podium .medal::before { animation: none; }
 }
+
+/* Nombre de chansons, juste sous le titre du classement */
+.song-count { margin: 8px 0 0; font-size: 16px; color: var(--ink-800); }
+.song-count strong { padding: 1px 8px; border-radius: 6px; background: var(--pink-50); color: var(--pink-700); }
+
+/* ---------- Podium compact : il laisse voir la suite du classement ---------- */
+.podium { padding-top: 52px; gap: 14px; }
+.podium .body { padding: 26px 14px 12px; gap: 6px; }
+.podium .entry[data-place="1"] .body { padding: 30px 18px 14px; }
+.podium .medal { width: 44px; height: 44px; margin-left: -22px; top: -22px; font-size: 26px; }
+.podium .entry[data-place="1"] .medal { width: 52px; height: 52px; margin-left: -26px; top: -28px; font-size: 32px; }
+.podium .entry[data-place="1"] .medal::before { top: -26px; font-size: 22px; }
+.podium .cover { width: 84px; height: 84px; font-size: 36px; }
+.podium .entry[data-place="1"] .cover { width: 112px; height: 112px; font-size: 48px; }
+.podium .info h3 { font-size: 22px; }
+.podium .entry[data-place="1"] .info h3 { font-size: clamp(24px, 2.2vw, 30px); }
+.podium .info .by { margin-bottom: 6px; }
+.podium .suno-embed { height: 120px; }
+.podium .vote .count { font-size: 26px; }
+.podium .vote .cta { font-size: 16px; padding: 9px 16px; }
+.podium .entry[data-place="1"] .rank { height: 64px; font-size: 48px; }
+.podium .entry[data-place="2"] .rank { height: 44px; font-size: 36px; }
+.podium .entry[data-place="3"] .rank { height: 30px; font-size: 26px; }
+.podium .wave, .podium .seek, .podium .seek::-webkit-slider-runnable-track,
+.podium .entry[data-place="1"] .wave, .podium .entry[data-place="1"] .seek,
+.podium .entry[data-place="1"] .seek::-webkit-slider-runnable-track { height: 44px; }
+.podium .seek::-webkit-slider-thumb, .podium .entry[data-place="1"] .seek::-webkit-slider-thumb { height: 44px; }
+.podium .play, .podium .entry[data-place="1"] .play { width: 48px; height: 48px; font-size: 18px; }
+.entries .suno-embed { height: 120px; }
+
+.more-songs {
+  display: block; margin: 14px 0 0; padding: 12px 16px; border-radius: var(--radius-pill); text-align: center;
+  background: var(--blue-600); color: var(--white); text-decoration: none;
+  font-family: var(--font-display); font-size: 20px; letter-spacing: .04em; text-transform: uppercase;
+  animation: nudge-down 1.6s ease-in-out infinite;
+}
+.more-songs:hover { background: var(--pink-600); color: var(--ink-900); }
+.more-songs[hidden] { display: none; }
+@keyframes nudge-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+
+/* Mobile : les 3 premiers deviennent des cartes horizontales, comme la suite du classement */
+@media (max-width: 960px) {
+  .podium, .podium[data-count] { gap: 30px; padding: 34px 10px 0; }
+  .podium .body {
+    display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 8px 12px;
+    text-align: left; border-bottom: 2px solid var(--ink-900); border-radius: 20px; padding: 26px 12px 12px;
+  }
+  .podium .entry[data-place="1"] .body { padding: 30px 12px 12px; }
+  .podium .cover, .podium .entry[data-place="1"] .cover { width: 72px; height: 72px; font-size: 32px; grid-row: span 2; }
+  .podium .info { display: contents; }
+  .podium .info h3 { grid-column: 2; font-size: 22px; }
+  .podium .info .by { grid-column: 2; margin: -6px 0 0; }
+  .podium .info > :not(h3):not(.by) { grid-column: 1 / -1; }
+  .podium .vote { grid-column: 1 / -1; justify-content: space-between; }
+  .podium .entry .rank { display: none; }
+  .podium .medal, .podium .entry[data-place="1"] .medal { left: 20px; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .more-songs { animation: none; } }

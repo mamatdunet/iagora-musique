@@ -293,6 +293,14 @@ function render(entries) {
     }
   }
   podium.dataset.count = String(Math.min(entries.length, 3));
+  // Bandeau sous le podium : il reste plein d'autres chansons à écouter !
+  const count = $('#song-count');
+  count.hidden = entries.length < 2;
+  count.innerHTML = `🎶 <strong>${entries.length} chansons</strong> en lice : écoute-les toutes, le podium change à chaque vote&nbsp;!`;
+  const others = entries.length - 3;
+  const more = $('#more-songs');
+  more.hidden = others <= 0;
+  more.textContent = `⬇ Et ${others} autre${others > 1 ? 's' : ''} chanson${others > 1 ? 's' : ''} à écouter et à voter ⬇`;
   syncPlayAll();
   empty.hidden = entries.length > 0;
   list.hidden = entries.length === 0;
