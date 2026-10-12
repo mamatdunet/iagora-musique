@@ -306,6 +306,12 @@ async function refresh() {
     const data = await res.json();
     render(data.entries);
     startCooldown(data.cooldown);
+    // Arrivée avec une ancre (#classement…) : le classement vient d'être affiché,
+    // on s'y recale une seule fois.
+    if (!refresh.anchored && location.hash) {
+      refresh.anchored = true;
+      document.querySelector(location.hash)?.scrollIntoView({ block: 'start' });
+    }
   } catch {
     setStatus(voteStatus, 'Impossible de charger le classement. Nouvel essai dans quelques secondes…', 'error');
   }

@@ -48,12 +48,36 @@ function syncRows() {
   }
 }
 
-function toggle(entry) {
-  // Chanson ajoutée par lien Suno : elle se lit dans le lecteur Suno, sur la page du classement.
-  if (!entry.mediaUrl) {
-    location.href = '/top50#classement';
+// Chanson ajoutée par lien Suno : son lecteur officiel s'ouvre sous la ligne, dans la colonne.
+let openSuno = null; // id de la chanson Suno dont le lecteur est ouvert
+
+function toggleSuno(entry) {
+  miniTop.querySelector('.mini-embed')?.remove();
+  rows.forEach((row) => row.classList.remove('suno-open'));
+  if (openSuno === entry.id) {
+    openSuno = null;
     return;
   }
+  player.pause();
+  openSuno = entry.id;
+  const row = rows.get(entry.id);
+  const li = document.createElement('li');
+  li.className = 'mini-embed';
+  const frame = document.createElement('iframe');
+  frame.src = `https://suno.com/embed/${entry.sunoId}`;
+  frame.title = `Lecteur Suno : ${entry.title}`;
+  frame.allow = 'autoplay; encrypted-media';
+  li.append(frame);
+  row.classList.add('suno-open');
+  row.after(li);
+}
+
+function toggle(entry) {
+  if (!entry.mediaUrl && entry.sunoId) {
+    toggleSuno(entry);
+    return;
+  }
+  if (openSuno) toggleSuno({ id: openSuno }); // referme le lecteur Suno ouvert
   if (current === entry.id) {
     if (player.paused) player.play();
     else player.pause();
@@ -76,6 +100,8 @@ player.addEventListener('timeupdate', () => {
 });
 
 async function loadMiniTop() {
+  // Pas de mise à jour pendant l'écoute d'une chanson Suno : elle couperait le lecteur.
+  if (openSuno) return;
   try {
     const { entries } = await fetch('/api/entries', { cache: 'no-store' }).then((r) => r.json());
     const top = entries.slice(0, 5);
