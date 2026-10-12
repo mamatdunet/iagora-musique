@@ -378,8 +378,8 @@ function syncPlayAll() {
   playAllBtn.textContent = queueOn && anyPlaying() ? '❚❚ Pause' : '▶ Écouter tous les hits';
 }
 
-function playMedia(media) {
-  media.closest('.entry').scrollIntoView({ behavior: 'smooth', block: 'center' });
+function playMedia(media, scroll = true) {
+  if (scroll) media.closest('.entry').scrollIntoView({ behavior: 'smooth', block: 'center' });
   return media.play();
 }
 
@@ -418,10 +418,13 @@ async function autoPlayAll() {
   history.replaceState(null, '', location.pathname + location.hash);
   for (let i = 0; i < 40 && !nodes.size; i++) await new Promise((r) => setTimeout(r, 250));
   if (!nodes.size) return;
-  playAllBtn.scrollIntoView({ block: 'start' });
+  // On reste au niveau du podium : la lecture démarre sans faire défiler la page.
+  $('#classement').scrollIntoView({ block: 'start' });
+  const first = rankedMedia()[0];
+  if (!first) return;
   queueOn = true;
   try {
-    await playMedia(rankedMedia()[0]);
+    await playMedia(first, false);
   } catch {
     queueOn = false;
     playAllBtn.classList.add('attention');
