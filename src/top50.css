@@ -172,8 +172,6 @@ progress { width: 100%; height: 12px; accent-color: var(--pink-600); }
 .ranking > .status { margin-top: 10px; }
 .play-all-btn { background: var(--pink-600); color: var(--ink-900); }
 .play-all-btn:hover { background: var(--blue-600); color: var(--white); }
-.play-all-btn.attention { animation: nudge 1s ease-in-out 3; box-shadow: 0 0 0 6px var(--pink-50); }
-@keyframes nudge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 .empty {
   margin: 24px 0 0; padding: 40px 20px; text-align: center; font-size: 18px; font-weight: 600;
   border: 3px dashed var(--ink-200); border-radius: var(--radius-lg); color: var(--ink-500);

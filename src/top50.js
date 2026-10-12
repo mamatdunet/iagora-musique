@@ -411,27 +411,6 @@ document.addEventListener('ended', (event) => {
 document.addEventListener('play', syncPlayAll, true);
 document.addEventListener('pause', syncPlayAll, true);
 
-// Arrivée depuis l'accueil (« Écouter tous les hits ») : on lance la lecture si le navigateur l'autorise,
-// sinon le bouton est mis en avant pour un clic.
-async function autoPlayAll() {
-  if (new URLSearchParams(location.search).get('ecouter') !== 'tout') return;
-  history.replaceState(null, '', location.pathname + location.hash);
-  for (let i = 0; i < 40 && !nodes.size; i++) await new Promise((r) => setTimeout(r, 250));
-  if (!nodes.size) return;
-  // On reste au niveau du podium : la lecture démarre sans faire défiler la page.
-  $('#classement').scrollIntoView({ block: 'start' });
-  const first = rankedMedia()[0];
-  if (!first) return;
-  queueOn = true;
-  try {
-    await playMedia(first, false);
-  } catch {
-    queueOn = false;
-    playAllBtn.classList.add('attention');
-  }
-  syncPlayAll();
-}
-
 // Une seule chanson à la fois.
 document.addEventListener('play', (event) => {
   for (const m of document.querySelectorAll('.entry audio, .entry video')) if (m !== event.target) m.pause();
@@ -731,4 +710,3 @@ form.addEventListener('submit', async (event) => {
 
 refresh();
 setInterval(refresh, 15000);
-autoPlayAll();
